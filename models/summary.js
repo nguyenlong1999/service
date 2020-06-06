@@ -6,6 +6,9 @@ const SummarySchema = mongoose.Schema({
     imageCount: {type: Number,default: 0},
     connectCount: {type: Number,default: 0},
     loginCount: {type: Number, default: 0},
+    hotelCount: {type: Number, default: 0},
+    bookingCount: {type: Number, default: 0},
+    promotionCount: {type: Number, default: 0},
     description:{type:String,default:'Hiển thị trang hoạt động trang web'}
 }, {
     timestamps: true
