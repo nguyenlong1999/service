@@ -33,7 +33,7 @@ exports.createHotel = (req, res) => {
     imageUrl: req.body.imageUrl,
     maxDay: req.body.maxDay,
     status: req.body.status,
-    facilitie: req.body.facilitie,
+    facilities: req.body.facilities,
     security: req.body.security,
     reservationTime: req.body.reservationTime,
     cancelRoom: req.body.cancelRoom
