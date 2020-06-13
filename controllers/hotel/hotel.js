@@ -15,16 +15,6 @@ const Summarys = mongoose.model('Summarys');
 const Messages = mongoose.model('Messages');
 
 exports.createHotel = (req, res) => {
-  const roomDetail = new RoomDetails({
-    // hotel: objectId,
-    capacity: req.body.roomDetail.capacity,
-    bathroom: req.body.roomDetail.bathroom,
-    promotion: req.body.roomDetail.promotion,
-    price: req.body.roomDetail.price,
-    priceExtra: req.body.roomDetail.priceExtra,
-    bedroom: req.body.roomDetail.bedroom,
-    bedroomDetail: req.body.roomDetail.bedroomDetail
-  });
   const hotel = new Hotels({
     name: req.body.name,
     address: req.body.address,
@@ -48,37 +38,46 @@ exports.createHotel = (req, res) => {
     reservationTime: req.body.reservationTime,
     cancelRoom: req.body.cancelRoom
   });
-  let id = mongoose.Types.ObjectId(req.body.object);
 
-  console.log(id + "xxxx");
-  res.status(200).send({
-    roomDetail: roomDetail,
-    mesage: "Thêm khách sạn thành công"
+  const roomDetail = new RoomDetails({
+    hotelObjId: hotel._id,
+    capacity: req.body.roomDetail.capacity,
+    bathroom: req.body.roomDetail.bathroom,
+    promotion: req.body.roomDetail.promotion,
+    price: req.body.roomDetail.price,
+    priceExtra: req.body.roomDetail.priceExtra,
+    bedroom: req.body.roomDetail.bedroom,
+    bedroomDetail: req.body.roomDetail.bedroomDetail
   });
+
+
+
+ hotel.save().then(() => {
+    res.status(200).send({
+      hotel: hotel,
+      mesage: "Thêm khách sạn thành công"
+    });
+  }).catch(err => {
+    res.status(500).send({
+      message: err.message || 'Some error occurred while creating the note'
+    })
+  });
+
   // console.log(req.body.bedroomDetail);
   // const userId = req.email.toString();
   // console.log(userId);
   // console.log(roomDetail.bedroomDetail);
-  // roomDetail.save().then(() => {
-  //   res.status(200).send({
-  //     roomDetail: roomDetail,
-  //     mesage: "Thêm khách sạn thành công"
-  //   });
-  // }).catch(err => {
-  //   res.status(500).send({
-  //     message: err.message || 'Some error occurred while creating the note'
-  //   })
-  // });
-  // hotel.save().then(() => {
-  //   res.status(200).send({
-  //     roomDetail: roomDetail,
-  //     mesage: "Thêm khách sạn thành công"
-  //   });
-  // }).catch(err => {
-  //   res.status(500).send({
-  //     message: err.message || 'Some error occurred while creating the note'
-  //   })
-  // });
+  roomDetail.save().then(() => {
+    res.status(200).send({
+      roomDetail: roomDetail,
+      mesage: "Thêm khách sạn thành công"
+    });
+  }).catch(err => {
+    res.status(500).send({
+      message: err.message || 'Some error occurred while creating the note'
+    })
+  });
+  
 };
 // exports.updateUser = async (req, res) => {
 //   console.log('helo' + req.body.user.id);
