@@ -30,6 +30,8 @@ require("./config/facebookconfig");
 require("./config/googleconfig");
 require("./models/message");
 require("./models/summary");
+require("./models/hotel");
+require("./models/room_detail");
 const cron = require('node-schedule');
 const Tokens = require("./models/Token");
 global.__root = __dirname + '/';
@@ -75,11 +77,14 @@ app.use(function (req, res, next) {
 });
 
 app.use(require("morgan")("dev"));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/facebook", facebook);
 app.use("/google", google);
+app.use("upload", function (request, response, next) {
+    next();
+});
 
 //CORS Middleware
 app.use(function (req, res, next) {
@@ -95,7 +100,7 @@ app.use(function (req, res, next) {
 app.use(
     session({
         secret: "passport-tutorial",
-        cookie: {maxAge: 60000},
+        cookie: { maxAge: 60000 },
         resave: false,
         saveUninitialized: false
     })
@@ -116,6 +121,7 @@ require("./routers/util.router")(app);
 require("./routers/message.router")(app);
 require("./routers/gallery.router")(app);
 require("./routers/summary.router")(app);
+require("./routers/hotel.router")(app);
 if (!isProduction) {
     app.use(errorHandler());
 }
@@ -211,13 +217,41 @@ app.enable('trust proxy');
 // only if you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
 
 var limiter = new RateLimit({
-    windowMs: 5*60*1000, // 5 minutes
+    windowMs: 5 * 60 * 1000, // 5 minutes
     max: 1000, // limit each IP to 100 requests per windowMs
     delayMs: 0 // disable delaying - full speed until the max limit is reached
 });
 
 //  apply to all requests
 app.use(limiter);
+
+
+const multipart = require('connect-multiparty');
+const multipartMiddleware = multipart({ uploadDir: './uploads' });
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use("/api/upload", function (request, response, next) {
+    console.log(request)
+    next();
+});
+
+app.get('/api/upload', (req, res) => {
+    console.log(req)
+    res.json({ 'message': 'hello' });
+});
+
+app.post('/api/upload', multipartMiddleware, (req, res) => {
+    console.log(req)
+    res.json({ 'message': req.files });
+});
+
+app.use(function (err, req, res, next) {
+    console.log(req)
+    res.json({ 'error': err.message })
+});
+
 // const http = require('http');
 // const server = http.Server(app);
 
