@@ -41,3 +41,7 @@ typings
 dist
 .idea/workspace.xml
 .idea/workspace.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/service.iml
+.idea/vcs.xml

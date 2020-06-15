@@ -11,6 +11,29 @@ const google = require("./routers/google");
 const passport = require("passport");
 const schedule = require('node-schedule');
 const RateLimit = require('express-rate-limit');
+const multer = require('multer');
+const PATH = './uploads';
+
+let storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, PATH);
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname+ '-' + Date.now()+'.png')
+    }
+});
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === "image/jpg" ||
+        file.mimetype === "image/jpeg" ||
+        file.mimetype === "image/png") {
+
+        cb(null, true);
+    } else {
+        cb(new Error("Image uploaded is not of type jpg/jpeg or png"), false);
+    }
+};
+const upload = multer({storage: storage, fileFilter: fileFilter});
+
 require("./models/User");
 require("./models/Token");
 require("./db/db");
@@ -80,7 +103,7 @@ app.use(function (req, res, next) {
 });
 
 app.use(require("morgan")("dev"));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/facebook", facebook);
@@ -103,7 +126,7 @@ app.use(function (req, res, next) {
 app.use(
     session({
         secret: "passport-tutorial",
-        cookie: { maxAge: 60000 },
+        cookie: {maxAge: 60000},
         resave: false,
         saveUninitialized: false
     })
@@ -202,6 +225,28 @@ passport.use(
         }
     )
 );
+app.get('/api', function (req, res) {
+    res.end('File catcher');
+});
+
+// POST File
+app.post('/api/upload', upload.single('image'), function (req, res) {
+    if (!req.file) {
+        console.log("No file is available!");
+        return res.send({
+            success: false
+        });
+
+    } else {
+        console.log('File is available!',res.req.file.filename);
+        return res.send({
+            success: true,
+            filePath: res.req.file.filename
+        })
+    }
+});
+
+
 const rule = new cron.RecurrenceRule();
 rule.dayOfWeek = [5, 6, 0, 1, 2, 3, 4,];
 rule.hour = 9;
@@ -227,34 +272,6 @@ var limiter = new RateLimit({
 
 //  apply to all requests
 app.use(limiter);
-
-
-const multipart = require('connect-multiparty');
-const multipartMiddleware = multipart({ uploadDir: './uploads' });
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use("/api/upload", function (request, response, next) {
-    console.log(request)
-    next();
-});
-
-app.get('/api/upload', (req, res) => {
-    console.log(req)
-    res.json({ 'message': 'hello' });
-});
-
-app.post('/api/upload', multipartMiddleware, (req, res) => {
-    console.log(req)
-    res.json({ 'message': req.files });
-});
-
-app.use(function (err, req, res, next) {
-    console.log(req)
-    res.json({ 'error': err.message })
-});
-
 // const http = require('http');
 // const server = http.Server(app);
 
