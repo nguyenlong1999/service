@@ -7,21 +7,21 @@ const { Schema } = mongoose;
 
 const UsersSchema = new Schema({
     email: String,
-    name:String,
-    lastName:String,
+    name: String,
+    lastName: String,
     birthday: Number,
-    materialStatus:String,
-    signature:String,
-    introduction:String,
-    gender: { type: Number, default: 1},
-    imageUrl:{type:String,default:'jbiajl3qqdzshdw0z749'},
+    materialStatus: String,
+    signature: String,
+    introduction: String,
+    gender: { type: Number, default: 1 },
+    imageUrl: { type: String, default: 'jbiajl3qqdzshdw0z749' },
     hash: String,
     salt: String,
-    totalPoint:{ type: Number, default: 3},
-    role:{ type: Number, default: -1},
-    warningReport:{ type: Number, default: 0 },
-    status:{ type: Number, default: 1 },
-    updateAccount:String,
+    totalPoint: { type: Number, default: 3 },
+    role: { type: Number, default: -1 },
+    warningReport: { type: Number, default: 0 },
+    status: { type: Number, default: 1 },
+    updateAccount: String,
 }, {
     timestamps: true
 });
