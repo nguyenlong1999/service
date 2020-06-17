@@ -34,17 +34,10 @@ exports.createHotel = (req, res) => {
     maxDay: req.body.hotel.maxDay,
     status: req.body.hotel.status
   });
-
-  const roomDetail = new RoomDetails({
-    capacity: req.body.roomDetail.capacity,
-    bathroom: req.body.roomDetail.bathroom,
-    promotion: req.body.roomDetail.promotion,
-    price: req.body.roomDetail.price,
-    priceExtra: req.body.roomDetail.priceExtra,
-    bedroom: req.body.roomDetail.bedroom,
-    bedroomDetail: req.body.roomDetail.bedroomDetail
+  const cancelRoom = new CancelRooms({
+    flexible: req.body.cancelRoom.flexible,
+    strict: req.body.cancelRoom.strict
   });
-
   const faciliti = new Facilities({
     airconditioner: req.body.facilities.airconditioner,
     television: req.body.facilities.television,
@@ -74,10 +67,6 @@ exports.createHotel = (req, res) => {
     sixMonth: req.body.reservationTime.sixMonth,
     threeMonth: req.body.reservationTime.threeMonth
   });
-  const cancelRoom = new CancelRooms({
-    flexible: req.body.cancelRoom.flexible,
-    strict: req.body.cancelRoom.strict
-  });
   Users.findOne({ email: req.body.hotel.userEmail }, function (err, userSchema) {
     if (err) {
       return res.send({
@@ -92,39 +81,50 @@ exports.createHotel = (req, res) => {
     } else {
       hotel.user = userSchema;
       hotel.save().then(() => {
-        roomDetail.hotelObj = hotel;
-        roomDetail.save().then(() => {
-          faciliti.hotelObj = hotel;
-          faciliti.save().then(() => {
-            reservationTime.hotelObj = hotel;
-            reservationTime.save().then(() => {
-              cancelRoom.hotelObj = hotel;
-              cancelRoom.save().then(() => {
-                res.status(200).send({
-                  hotel: hotel,
-                  faciliti: faciliti,
-                  reservationTime: reservationTime,
-                  cancelRoom: cancelRoom,
-                  message: 'Create hotel successfuly'
-                })
-              }).catch(err => {
-                res.status(500).send({
-                  message: err.message || 'Some error occurred while creating the cancelRoom'
-                })
+        faciliti.hotelObj = hotel;
+        faciliti.save().then(() => {
+          reservationTime.hotelObj = hotel;
+          reservationTime.save().then(() => {
+            cancelRoom.hotelObj = hotel;
+            cancelRoom.save().then(() => {
+              req.body.roomDetail.forEach(item => {
+                console.log(item);
+                let roomDetail = new RoomDetails({
+                  capacity: item.capacity,
+                  bathroom: item.bathroom,
+                  promotion: item.promotion,
+                  price: item.price,
+                  priceExtra: item.priceExtra,
+                  bedroom: item.bedroom,
+                  bedroomDetail: item.bedroomDetail
+                });
+                roomDetail.hotelObj = hotel;
+                roomDetail.save().catch(err => {
+                  res.status(500).send({
+                    message: err.message || 'Some error occurred while creating the roomdetail'
+                  })
+                });
               });
+              res.status(200).send({
+                hotel: hotel,
+                faciliti: faciliti,
+                reservationTime: reservationTime,
+                cancelRoom: cancelRoom,
+                message: 'Create hotel successfuly'
+              })
             }).catch(err => {
               res.status(500).send({
-                message: err.message || 'Some error occurred while creating the reservationTime'
+                message: err.message || 'Some error occurred while creating the cancelRoom'
               })
             });
           }).catch(err => {
             res.status(500).send({
-              message: err.message || 'Some error occurred while creating the facilities'
+              message: err.message || 'Some error occurred while creating the reservationTime'
             })
           });
         }).catch(err => {
           res.status(500).send({
-            message: err.message || 'Some error occurred while creating the roomdetail'
+            message: err.message || 'Some error occurred while creating the facilities'
           })
         });
       }).catch(err => {
@@ -134,12 +134,6 @@ exports.createHotel = (req, res) => {
       });
     }
   });
-
-
-  // console.log(req.body.bedroomDetail);
-  // const userId = req.email.toString();
-  // console.log(userId);
-  // console.log(roomDetail.bedroomDetail);
 };
 // exports.updateUser = async (req, res) => {
 //   console.log('helo' + req.body.user.id);
