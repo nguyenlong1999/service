@@ -246,6 +246,29 @@ app.post('/api/upload', upload.single('image'), function (req, res) {
     }
 });
 
+// GET File
+
+var mime = require('mime');	
+var fs = require('fs');
+
+app.get('/api/images/:imgName', function(req, res){
+  let imgName = req.params.imgName;
+  //const file = `${__dirname}/uploads/`+imgName; 
+  //res.download(file); 
+  var file = `${__dirname}/uploads/`+imgName; 
+  
+  var filename = path.basename(file);
+  
+  var mimetype = mime.lookup(file);
+  
+  // res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+   res.setHeader('Content-disposition', 'application/png');
+  // res.setHeader('Content-type', mimetype);
+
+  var filestream = fs.createReadStream(file);
+  filestream.pipe(res);
+});
+
 
 const rule = new cron.RecurrenceRule();
 rule.dayOfWeek = [5, 6, 0, 1, 2, 3, 4,];
