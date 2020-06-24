@@ -645,6 +645,7 @@ exports.loginAdmin =
                                         status: 200,
                                         user: finalUser.toAuthJSON(),
                                         role: role,
+                                        objectId: userSchema._id,
                                         summary: data,
                                         image: userSchema.imageUrl
                                     });
@@ -1022,6 +1023,25 @@ exports.getMemberInfo = async (req, res) => {
         }
     })
 };
+
+exports.getUserOnlineInfo = async (req, res) => {
+    console.log('helo' + req.body.user);
+    const mongoose = require('mongoose');
+    // const id = mongoose.Types.ObjectId(req.params.id);
+    // await Users.findOne({_id: id}, function (err, user) {
+    //     if (err || user === null) {
+    //         console.log(user);
+            return res.send({
+                'status': 200,
+                'message': 'user not found'
+            })
+    //     } else {
+    //         return res.status(200).send(user);
+    //
+    //     }
+    // })
+};
+
 exports.getTopUsers = (async (req, res) => {
     await Users.find({
         role: {

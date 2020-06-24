@@ -19,7 +19,7 @@ let storage = multer.diskStorage({
         cb(null, PATH);
     },
     filename: (req, file, cb) => {
-        cb(null, file.fieldname+ '-' + Date.now()+'.png')
+        cb(null, file.fieldname + '-' + Date.now() + '.png')
     }
 });
 const fileFilter = (req, file, cb) => {
@@ -32,7 +32,7 @@ const fileFilter = (req, file, cb) => {
         cb(new Error("Image uploaded is not of type jpg/jpeg or png"), false);
     }
 };
-const upload = multer({storage: storage, fileFilter: fileFilter});
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 require("./models/User");
 require("./models/Token");
@@ -100,7 +100,7 @@ app.use(function (req, res, next) {
 });
 
 app.use(require("morgan")("dev"));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/facebook", facebook);
@@ -123,7 +123,7 @@ app.use(function (req, res, next) {
 app.use(
     session({
         secret: "passport-tutorial",
-        cookie: {maxAge: 60000},
+        cookie: { maxAge: 60000 },
         resave: false,
         saveUninitialized: false
     })
@@ -235,7 +235,7 @@ app.post('/api/upload', upload.single('image'), function (req, res) {
         });
 
     } else {
-        console.log('File is available!',res.req.file.filename);
+        console.log('File is available!', res.req.file.filename);
         return res.send({
             success: true,
             filePath: res.req.file.filename
@@ -313,6 +313,15 @@ io.sockets.on('connection', function (socket) {
         console.log(' user nè ' + sendMessage)
         // listUserOnline[message]=socket;
         socket.broadcast.to(id).emit('message', sendMessage);
+    });
+    socket.on('get-list-online', (message) => {
+        let ObjectId = message.objectId;
+        let sendMessage = {'get-list-online':listUserOnline};
+        let id = listUserOnline[ObjectId];
+        console.log(' id nè1   ' + id)
+        console.log(' user nè1 ' + sendMessage)
+        // listUserOnline[message]=socket;
+        socket.broadcast.emit('message', sendMessage);
     });
     console.log(Object.keys(listUserOnline))
 });

@@ -98,7 +98,7 @@ module.exports = app => {
   app.get("/getNewUsers", users.getNewUsers);
   app.get('/active/:id', users.activeMember);
   app.get('/getMemerInfo/:id', users.getMemberInfo);
-
+  app.post('/getUserOnlineInfo', users.getUserOnlineInfo);
   // uploads
   // const base = 'http://localhost:8000/uploads'
   // const multipart = require('connect-multiparty');
