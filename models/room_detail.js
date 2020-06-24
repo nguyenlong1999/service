@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const { ObjectId } = require('mongodb');
 const RoomDetailSchema = mongoose.Schema({
-  hotelObjId: { type: ObjectId},
+  hotelObj: { type: Object },
   capacity: { type: Number, default: 0 },
   bathroom: { type: Number, default: 0 },
   promotion: { type: Number, default: 0 },

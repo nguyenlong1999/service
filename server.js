@@ -54,6 +54,9 @@ require("./config/googleconfig");
 require("./models/message");
 require("./models/summary");
 require("./models/hotel");
+require("./models/facilities");
+require("./models/reservation_time");
+require("./models/cancel_room");
 require("./models/room_detail");
 const cron = require('node-schedule');
 const Tokens = require("./models/Token");
@@ -241,6 +244,29 @@ app.post('/api/upload', upload.single('image'), function (req, res) {
             filePath: res.req.file.filename
         })
     }
+});
+
+// GET File
+
+var mime = require('mime');	
+var fs = require('fs');
+
+app.get('/api/images/:imgName', function(req, res){
+  let imgName = req.params.imgName;
+  //const file = `${__dirname}/uploads/`+imgName; 
+  //res.download(file); 
+  var file = `${__dirname}/uploads/`+imgName; 
+  
+  var filename = path.basename(file);
+  
+  var mimetype = mime.lookup(file);
+  
+  // res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+   res.setHeader('Content-disposition', 'application/png');
+  // res.setHeader('Content-type', mimetype);
+
+  var filestream = fs.createReadStream(file);
+  filestream.pipe(res);
 });
 
 

@@ -90,15 +90,15 @@ module.exports = app => {
   app.post("/updateReport",/* VerifyRoleByToken, */ users.updateReport);
   app.post("/openUser",/* VerifyRoleByToken, */ users.openUser);
   // app.post("/bannedUser",VerifyRoleByToken, users.bannedUser);
-  app.post("/updateUser",/* VerifyUserByToken, */ users.updateUser);
-  app.post("/changePassword",/* VerifyUserByToken, */ users.changePassword);
+  app.post("/updateUser", VerifyUserByToken, users.updateUser);
+  app.post("/changePassword", VerifyUserByToken, users.changePassword);
   app.post("/resetPassword", users.resetPassword);
   app.get("/logout", users.logout);
   app.get("/getTopUsers", users.getTopUsers);
   app.get("/getNewUsers", users.getNewUsers);
   app.get('/active/:id', users.activeMember);
-  app.get('/getMemerInfo/:id', users.getMemberInfo);
   app.post('/getUserOnlineInfo', users.getUserOnlineInfo);
+  app.get('/getMemerInfo/:email', users.getMemberInfo);
   // uploads
   // const base = 'http://localhost:8000/uploads'
   // const multipart = require('connect-multiparty');
