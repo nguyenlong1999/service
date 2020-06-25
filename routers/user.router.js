@@ -98,6 +98,7 @@ module.exports = app => {
   app.get("/getNewUsers", users.getNewUsers);
   app.get('/active/:id', users.activeMember);
   app.post('/getUserOnlineInfo', users.getUserOnlineInfo);
+  app.post('/getAllUserInfo', users.getAllUserInfo);
   app.get('/getMemerInfo/:email', users.getMemberInfo);
   // uploads
   // const base = 'http://localhost:8000/uploads'

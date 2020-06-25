@@ -58,6 +58,7 @@ require("./models/facilities");
 require("./models/reservation_time");
 require("./models/cancel_room");
 require("./models/room_detail");
+require("./models/chat_message");
 const cron = require('node-schedule');
 const Tokens = require("./models/Token");
 global.__root = __dirname + '/';
@@ -148,6 +149,7 @@ require("./routers/message.router")(app);
 require("./routers/gallery.router")(app);
 require("./routers/summary.router")(app);
 require("./routers/hotel.router")(app);
+require("./routers/chat-message.router")(app);
 if (!isProduction) {
     app.use(errorHandler());
 }
@@ -248,25 +250,25 @@ app.post('/api/upload', upload.single('image'), function (req, res) {
 
 // GET File
 
-var mime = require('mime');	
+var mime = require('mime');
 var fs = require('fs');
 
-app.get('/api/images/:imgName', function(req, res){
-  let imgName = req.params.imgName;
-  //const file = `${__dirname}/uploads/`+imgName; 
-  //res.download(file); 
-  var file = `${__dirname}/uploads/`+imgName; 
-  
-  var filename = path.basename(file);
-  
-  var mimetype = mime.lookup(file);
-  
-  // res.setHeader('Content-disposition', 'attachment; filename=' + filename);
-   res.setHeader('Content-disposition', 'application/png');
-  // res.setHeader('Content-type', mimetype);
+app.get('/api/images/:imgName', function (req, res) {
+    let imgName = req.params.imgName;
+    //const file = `${__dirname}/uploads/`+imgName; 
+    //res.download(file); 
+    var file = `${__dirname}/uploads/` + imgName;
 
-  var filestream = fs.createReadStream(file);
-  filestream.pipe(res);
+    var filename = path.basename(file);
+
+    var mimetype = mime.lookup(file);
+
+    // res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+    res.setHeader('Content-disposition', 'application/png');
+    // res.setHeader('Content-type', mimetype);
+
+    var filestream = fs.createReadStream(file);
+    filestream.pipe(res);
 });
 
 
@@ -342,7 +344,7 @@ io.sockets.on('connection', function (socket) {
     });
     socket.on('get-list-online', (message) => {
         let ObjectId = message.objectId;
-        let sendMessage = {'get-list-online':listUserOnline};
+        let sendMessage = { 'get-list-online': listUserOnline };
         let id = listUserOnline[ObjectId];
         console.log(' id nè1   ' + id)
         console.log(' user nè1 ' + sendMessage)

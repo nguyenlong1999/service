@@ -8,6 +8,7 @@ const nodeMailer = require('nodemailer');
 const Recipe = require("../models/recipe");
 const Gallery = require("../models/gallery");
 const Summarys = mongoose.model('Summarys');
+const ChatMessages = mongoose.model('ChatMessages');
 //POST new user route (optional, everyone has access)
 const Messages = mongoose.model('Messages');
 
@@ -1025,23 +1026,58 @@ exports.getMemberInfo = async (req, res) => {
 };
 
 exports.getUserOnlineInfo = async (req, res) => {
-    console.log('helo' + req.body.user);
-    const mongoose = require('mongoose');
-    // const id = mongoose.Types.ObjectId(req.params.id);
-    // await Users.findOne({_id: id}, function (err, user) {
-    //     if (err || user === null) {
-    //         console.log(user);
+    // console.log('hehe' + req.body.user);
+    // console.log(req.body.user);
+    let idUsers = req.body.user;
+    console.log(idUsers.length);
+    let idObjects = new Array();
+    idUsers.forEach(id => {
+        idObjects.push(mongoose.Types.ObjectId(id));
+    });
+    await Users.find({
+        _id: {
+            $in: idObjects
+        }
+    }, function (err, users) {
+        console.log(users);
+        if (err || users === null) {
             return res.send({
-                'status': 200,
+                'status': 500,
                 'message': 'user not found'
             })
-    //     } else {
-    //         return res.status(200).send(user);
-    //
-    //     }
-    // })
-};
+        } else {
+            return res.send({
+                'status': 200,
+                'user': users,
+                'message': 'user not found'
+            })
+        }
 
+    })
+};
+exports.getAllUserInfo = async (req, res) => {
+    const userId = mongoose.Types.ObjectId(req.body.user._id);
+    let newUsers = new Array();
+    await Users.find({}).then(async users => {
+        for (let user of users) {
+            if (user._id.toString() != req.body.user._id) {
+                let id = mongoose.Types.ObjectId(user._id);
+                let chatMessResult = await this.getAllChatMess(id, userId, 0);
+                user.warningReport = chatMessResult.length;
+                newUsers.push(user);
+            }
+        }
+        return res.send({
+            'status': 200,
+            'users': newUsers,
+            'message': 'user not found'
+        });
+    });
+};
+exports.getAllChatMess = function (fromUser, toUser, news) {
+    var result = ChatMessages.find({ fromUser: fromUser, toUser: toUser, news: news });
+    return result;
+}
 exports.getTopUsers = (async (req, res) => {
     await Users.find({
         role: {
