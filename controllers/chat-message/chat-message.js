@@ -4,21 +4,22 @@ const Messages = mongoose.model('Messages');
 const Users = mongoose.model("Users");
 const ChatMessages = mongoose.model("ChatMessages");
 
-exports.getMessages = (async (req, res) => {
-  await Messages.find()
-    .then(messages => {
-      res.status(200).send(messages
-      )
-    }).catch(err => {
-      console.log(err);
-      res.send({
-        'status': 404,
-        'message': err.message || 'Some error occurred while finding message'
-      });
+exports.getChatMessages = (async (req, res) => {
+  await ChatMessages.find().then(messages => {
+    res.status(200).send(messages
+    )
+  }).catch(err => {
+    console.log(err);
+    res.send({
+      'status': 404,
+      'message': err.message || 'Some error occurred while finding message'
     });
+  });
 });
-exports.findMessage = async (req, res) => {
-  await Messages.find({ user: req.body.user.email }, function (err, messages) {
+exports.findChatMessage = async (req, res) => {
+  const fromUser = mongoose.Types.ObjectId(req.body.chatMess.fromUser);
+  const toUser = mongoose.Types.ObjectId(req.body.chatMess.toUser);
+  await ChatMessages.find({ fromUser: fromUser, toUser: toUser }, function (err, messages) {
     if (err) {
       console.log(err);
       return res.send({
@@ -33,7 +34,7 @@ exports.findMessage = async (req, res) => {
       }
       res.status(200).send({
         message: messages
-      })
+      });
     }
   }).sort({
     createdAt: -1
@@ -46,33 +47,48 @@ exports.createChatMessage = (req, res) => {
     toUser: req.body.chatMess.toUser,
     content: req.body.chatMess.content
   });
-  console.log(chatMessage);
-  // Users.findOne({ email: req.body.message.user }, function (err, userSchema) {
-  //   if (err) {
-  //     return res.send({
-  //       status: 401,
-  //       message: err
-  //     });
-  //   }
-  //   if (userSchema) {
-  //     message.user = userSchema
-  //   } else {
-  //     return res.send({
-  //       status: 403,
-  //       message: err
-  //     });
-  //   }
-  // });
-  chatMessage.save()
-    .then(() => {
+  const fromUserId = mongoose.Types.ObjectId(req.body.chatMess.fromUser);
+  const toUserId = mongoose.Types.ObjectId(req.body.chatMess.toUser);
+  Users.findOne({ _id: fromUserId }, function (err, userSchema) {
+    if (err) {
       return res.send({
-        result: chatMessage,
-        status: 200,
-        message: "Gửi tin nhắn thành công"
+        status: 401,
+        message: err
       });
-    }).catch(err => {
-      res.status(500).send({
-        message: err.message || 'Some error occurred while creating the note'
+    }
+    if (userSchema) {
+      Users.findOne({ _id: fromUserId }, function (err, user2Schema) {
+        if (err) {
+          return res.send({
+            status: 401,
+            message: err
+          });
+        }
+        if (user2Schema) {
+          chatMessage.save().then(() => {
+            return res.send({
+              result: chatMessage,
+              status: 200,
+              message: "Gửi tin nhắn thành công"
+            });
+          }).catch(err => {
+            res.status(500).send({
+              message: err.message || 'Some error occurred while creating the message'
+            });
+          });
+        } else {
+          return res.send({
+            status: 403,
+            message: err
+          });
+        }
       });
-    });
-};
+    }
+    else {
+      return res.send({
+        status: 403,
+        message: err
+      });
+    }
+  });
+}

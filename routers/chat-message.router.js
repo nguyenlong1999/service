@@ -7,4 +7,5 @@ module.exports = app => {
   // app.post("/deleteMessage",VerifyToken, messages.deleteMessage);
   // app.get("/getMessages", messages.getMessages);
   app.post("/createChatMessage", /* VerifyToken, */chatMessages.createChatMessage);
+  app.post("/findChatMessage", /* VerifyToken, */chatMessages.findChatMessage);
 };
