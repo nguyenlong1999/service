@@ -15,257 +15,138 @@ const Summarys = mongoose.model('Summarys');
 //POST new user route (optional, everyone has access)
 
 exports.createHotel = (req, res) => {
-  const hotel = new Hotels({
-    name: req.body.hotel.name,
-    address: req.body.hotel.address,
-    touristAttraction: req.body.hotel.touristAttraction,
-    sqm: req.body.hotel.sqm,
-    country: req.body.hotel.country,
-    province: req.body.hotel.province,
-    city: req.body.hotel.city,
-    zip: req.body.hotel.zip,
-    desHotel: req.body.hotel.desHotel,
-    suggestPlayground: req.body.hotel.suggestPlayground,
-    rulerHotel: req.body.hotel.rulerHotel,
-    guideToHotel: req.body.hotel.guideToHotel,
-    starHotel: req.body.hotel.starHotel,
-    pointRating: req.body.hotel.pointRating,
-    imageUrl: req.body.hotel.imageUrl,
-    maxDay: req.body.hotel.maxDay,
-    status: req.body.hotel.status
-  });
-  const cancelRoom = new CancelRooms({
-    flexible: req.body.cancelRoom.flexible,
-    strict: req.body.cancelRoom.strict
-  });
-  const faciliti = new Facilities({
-    airconditioner: req.body.facilities.airconditioner,
-    television: req.body.facilities.television,
-    internet: req.body.facilities.internet,
-    beddingSet: req.body.facilities.beddingSet,
-    dryer: req.body.facilities.dryer,
-    cableTelevision: req.body.facilities.cableTelevision,
-    washingMachine: req.body.facilities.washingMachine,
-    cloth: req.body.facilities.cloth,
-    flatIron: req.body.facilities.flatIron,
-    shampoo: req.body.facilities.shampoo,
-    smartKey: req.body.facilities.smartKey,
-    coffeeMaker: req.body.facilities.coffeeMaker,
-    teaMaker: req.body.facilities.teaMaker,
-    tea: req.body.facilities.tea,
-    coffee: req.body.facilities.coffee,
-    freeBreakfast: req.body.facilities.freeBreakfast,
-    kitchen: req.body.facilities.kitchen,
-    smokeAlarmSensor: req.body.facilities.smokeAlarmSensor,
-    fireExtinguisher: req.body.facilities.fireExtinguisher,
-    firstAidKit: req.body.facilities.firstAidKit,
-    coAlarm: req.body.facilities.coAlarm
-  });
-  const reservationTime = new ReservationTimes({
-    anyTime: req.body.reservationTime.anyTime,
-    oneYear: req.body.reservationTime.oneYear,
-    sixMonth: req.body.reservationTime.sixMonth,
-    threeMonth: req.body.reservationTime.threeMonth
-  });
-  Users.findOne({ email: req.body.hotel.userEmail }, function (err, userSchema) {
-    if (err) {
-      return res.send({
-        status: 401,
-        message: 'Tài khoản đăng nhập không tồn tại'
-      });
-    } else if (!userSchema) {
-      return res.send({
-        status: 401,
-        message: 'Tài khoản đăng nhập không tồn tại'
-      });
-    } else {
-      hotel.user = userSchema;
-      hotel.save().then(() => {
-        faciliti.hotelObj = hotel;
-        faciliti.save().then(() => {
-          reservationTime.hotelObj = hotel;
-          reservationTime.save().then(() => {
-            cancelRoom.hotelObj = hotel;
-            cancelRoom.save().then(() => {
-              req.body.roomDetail.forEach(item => {
-                console.log(item);
-                let roomDetail = new RoomDetails({
-                  capacity: item.capacity,
-                  bathroom: item.bathroom,
-                  promotion: item.promotion,
-                  price: item.price,
-                  priceExtra: item.priceExtra,
-                  bedroom: item.bedroom,
-                  bedroomDetail: item.bedroomDetail
-                });
-                roomDetail.hotelObj = hotel;
-                roomDetail.save().catch(err => {
-                  res.status(500).send({
-                    message: err.message || 'Some error occurred while creating the roomdetail'
-                  })
-                });
-              });
-              res.status(200).send({
-                hotel: hotel,
-                faciliti: faciliti,
-                reservationTime: reservationTime,
-                cancelRoom: cancelRoom,
-                message: 'Create hotel successfuly'
-              })
-            }).catch(err => {
-              res.status(500).send({
-                message: err.message || 'Some error occurred while creating the cancelRoom'
-              })
+    const hotel = new Hotels({
+        name: req.body.hotel.name,
+        address: req.body.hotel.address,
+        guideToHotel: req.body.hotel.guideToHotel,
+        imageUrl: req.body.hotel.imageUrl,
+        cancellationPolicy: req.body.hotel.cancellationPolicy,
+        country: req.body.hotel.country,
+        reservationTime: req.body.hotel.reservationTime,
+        image: req.body.hotel.image,
+        rulerHotel: req.body.hotel.rulerHotel,
+        sqm: req.body.hotel.sqm,
+        starHotel: req.body.hotel.starHotel,
+        suggestPlayground: req.body.hotel.suggestPlayground,
+        totalRoomNumber: req.body.hotel.totalRoomNumber,
+        desHotel: req.body.hotel.desHotel,
+        zip: req.body.hotel.zip,
+
+        // touristAttraction: req.body.hotel.touristAttraction,
+        // province: req.body.hotel.province,
+        // city: req.body.hotel.city,
+        // maxDay: req.body.hotel.maxDay,
+        status: req.body.hotel.status
+    });
+
+    const faciliti = new Facilities({
+        COAlarmSensor: req.body.facilities.COAlarmSensor,
+        Dryer: req.body.facilities.Dryer,
+        Fireplace: req.body.facilities.Fireplace,
+        FirstAidKit: req.body.facilities.FirstAidKit,
+        Hairdryer: req.body.facilities.Hairdryer,
+        Kitchen: req.body.facilities.Kitchen,
+        Shampoo: req.body.facilities.Shampoo,
+        SmokeDetector: req.body.facilities.SmokeDetector,
+        Smoking: req.body.facilities.Smoking,
+        TowelsOfAllKinds: req.body.facilities.TowelsOfAllKinds,
+        airConditional: req.body.facilities.airConditional,
+        beddingSet: req.body.facilities.beddingSet,
+        cableTelevision: req.body.facilities.cableTelevision,
+        coffee: req.body.facilities.coffee,
+        doorStaff: req.body.facilities.doorStaff,
+        elevatorInHotel: req.body.facilities.elevatorInHotel,
+        fireExtinguisher: req.body.facilities.fireExtinguisher,
+        freeBreakfast: req.body.facilities.freeBreakfast,
+        freeInternet: req.body.facilities.freeInternet,
+        freeParking: req.body.facilities.freeParking,
+        freeWifi: req.body.facilities.freeWifi,
+        gymRoom: req.body.facilities.gymRoom,
+        heaters: req.body.facilities.heaters,
+        hotTub: req.body.facilities.hotTub,
+        indooPool: req.body.facilities.indooPool,
+        internetCharge: req.body.facilities.internetCharge,
+        ironingMachine: req.body.facilities.ironingMachine,
+        outdoorSwimmingPool: req.body.facilities.outdoorSwimmingPool,
+        petsAllowed: req.body.facilities.petsAllowed,
+        privatePool: req.body.facilities.privatePool,
+        smartKey: req.body.facilities.smartKey,
+        tea: req.body.facilities.tea,
+        teaMaker: req.body.facilities.teaMaker,
+        television: req.body.facilities.television,
+        washingMachine: req.body.facilities.washingMachine,
+        wheelchairAccessible: req.body.facilities.wheelchairAccessible,
+        wifiCharge: req.body.facilities.wifiCharge,
+        wirelessBell: req.body.facilities.wirelessBell,
+        workspace: req.body.facilities.workspace,
+    });
+
+    Users.findOne({email: req.body.hotel.userEmail}, function (err, userSchema) {
+        if (err) {
+            return res.send({
+                status: 401,
+                message: 'Tài khoản đăng nhập không tồn tại'
             });
-          }).catch(err => {
-            res.status(500).send({
-              message: err.message || 'Some error occurred while creating the reservationTime'
-            })
-          });
-        }).catch(err => {
-          res.status(500).send({
-            message: err.message || 'Some error occurred while creating the facilities'
-          })
-        });
-      }).catch(err => {
-        res.status(500).send({
-          message: err.message || 'Some error occurred while creating the hotel'
-        })
-      });
-    }
-  });
+        } else if (!userSchema) {
+            return res.send({
+                status: 401,
+                message: 'Tài khoản đăng nhập không tồn tại'
+            });
+        } else {
+            hotel.user = userSchema;
+            hotel.save().then(() => {
+                faciliti.hotelObj = hotel;
+                //đang code
+                faciliti.save().then(() => {
+                    reservationTime.hotelObj = hotel;
+                    reservationTime.save().then(() => {
+                        cancelRoom.hotelObj = hotel;
+                        cancelRoom.save().then(() => {
+                            req.body.roomDetail.forEach(item => {
+                                console.log(item);
+                                let roomDetail = new RoomDetails({
+                                    capacity: item.capacity,
+                                    bathroom: item.bathroom,
+                                    promotion: item.promotion,
+                                    price: item.price,
+                                    priceExtra: item.priceExtra,
+                                    bedroom: item.bedroom,
+                                    bedroomDetail: item.bedroomDetail
+                                });
+                                roomDetail.hotelObj = hotel;
+                                roomDetail.save().catch(err => {
+                                    res.status(500).send({
+                                        message: err.message || 'Some error occurred while creating the roomdetail'
+                                    })
+                                });
+                            });
+                            res.status(200).send({
+                                hotel: hotel,
+                                faciliti: faciliti,
+                                reservationTime: reservationTime,
+                                cancelRoom: cancelRoom,
+                                message: 'Create hotel successfuly'
+                            })
+                        }).catch(err => {
+                            res.status(500).send({
+                                message: err.message || 'Some error occurred while creating the cancelRoom'
+                            })
+                        });
+                    }).catch(err => {
+                        res.status(500).send({
+                            message: err.message || 'Some error occurred while creating the reservationTime'
+                        })
+                    });
+                }).catch(err => {
+                    res.status(500).send({
+                        message: err.message || 'Some error occurred while creating the facilities'
+                    })
+                });
+            }).catch(err => {
+                res.status(500).send({
+                    message: err.message || 'Some error occurred while creating the hotel'
+                })
+            });
+        }
+    });
 };
-// exports.updateUser = async (req, res) => {
-//   console.log('helo' + req.body.user.id);
-//   const mongoose = require('mongoose');
-//   const userObject = {
-//     _id: req.body.user.id,
-//     updateAccount: req.email,
-//     name: req.body.user.name,
-//     lastName: req.body.user.lastName,
-//     birthday: req.body.user.birthday,
-//     gender: req.body.user.gender,
-//     materialStatus: req.body.user.materialStatus,
-//     signature: req.body.user.signature,
-//     introduction: req.body.user.introduction,
-//     imageUrl: req.body.user.imageUrl,
-//   };
-//   const userId = req.userId.toString();
-//   console.log(userId);
-//   console.log(req.body.user.id);
-//   if (userId !== req.body.user.id) {
-//     return res.send({
-//       'status': 401,
-//       'message': 'Thí chú không có quyền. Vui lòng liên hệ admin nhé!'
-//     })
-//   }
-//   const id = mongoose.Types.ObjectId(req.body.user.id);
-//   await Users.findOne({ _id: id }, function (err, user) {
-//     if (err || user === null) {
-//       console.log(user);
-//       return res.send({
-//         'status': 401,
-//         'message': 'Không tìm thấy tài khoản người dùng'
-//       })
-//     } else {
-//       let check = false;
-//       console.log(userObject);
-
-//       user.updateAccount = req.email,
-//         user.name = userObject.name,
-//         user.lastName = userObject.lastName,
-//         user.birthday = userObject.birthday,
-//         user.gender = userObject.gender,
-//         user.materialStatus = userObject.materialStatus,
-//         user.signature = userObject.signature,
-//         user.introduction = userObject.introduction,
-//         user.imageUrl = userObject.imageUrl,
-//         user.save((function (err) {
-//           if (err) {
-//             return res.send({
-//               status: 401,
-//               message: "Cập nhật thông tin tài khoản không thành công"
-//             });
-//           } else {
-//             check = true;
-//             return res.status(200).send({
-//               status: 200,
-//               user: user,
-//               message: 'Cập nhật thông tin tài khoản thành công'
-//             });
-//           }
-//         }));
-//       Recipe.find()
-//         .sort({ status: 1 })
-//         .limit(100)
-//         .then(recipes => {
-//           recipes.forEach(recipe => {
-//             if (recipe.user.email === user.email) {
-//               console.log('update công thức' + recipe.recipeName);
-//               recipe.user = user;
-//               recipe.save((function (err) {
-//                 if (err) {
-//                   console.log('update công thức thất bại' + recipe.recipeName);
-//                 } else {
-//                   console.log('update công thức thành công' + recipe.recipeName);
-//                 }
-//               }));
-//             }
-//           })
-//         }).catch(() => {
-//           console.log('lỗi khi update ảnh recipe');
-//         });
-//       Gallery.find()
-//         .then(gallerys => {
-//           gallerys.forEach(gallery => {
-//             if (gallery.user.email === user.email) {
-//               gallery.user = user;
-//               const recipes = gallery.recipe;
-//               console.log(gallery.recipe.length);
-//               const arrayConfirm = null;
-//               recipes.forEach(recipe => {
-//                 console.log(recipe.recipeName + gallery.user.name);
-//                 if (recipe.user.email === user.email) {
-//                   recipe.user = user;
-//                   console.log(recipe.recipeName)
-//                 }
-//               });
-//               gallery.save((function (err) {
-//                 if (err) {
-//                   console.log('update bộ sưu tập thất bại' + gallery.name);
-//                 } else {
-//                   console.log('update bộ sưu tập thành công' + gallery.name);
-//                 }
-//               }));
-//             }
-//           });
-//         }).catch(() => {
-//           console.log('lỗi khi update ảnh recipe');
-//         });
-//     }
-//   });
-// };
-// exports.getTopUsers = (async (req, res) => {
-//   await Users.find({
-//     role: {
-//       $gte: 0
-//     }, status: {
-//       $gte: -1
-//     }
-//   })
-//     .sort({ totalPoint: -1 })
-//     .limit(10)
-//     .then(users => {
-//       res.status(200).send(users
-//       )
-//     }).catch(err => {
-//       res.send({
-//         'status': 404,
-//         'message': err.message || 'Some error occurred while finding users'
-//       })
-//     })
-// });
-// exports.uploadImage = (async (req, res) => {
-
-// });
-
