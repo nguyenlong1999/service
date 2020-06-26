@@ -15,6 +15,7 @@ const Summarys = mongoose.model('Summarys');
 //POST new user route (optional, everyone has access)
 
 exports.createHotel = (req, res) => {
+    console.log(req.body)
     const hotel = new Hotels({
         name: req.body.hotel.name,
         address: req.body.hotel.address,
@@ -31,57 +32,56 @@ exports.createHotel = (req, res) => {
         totalRoomNumber: req.body.hotel.totalRoomNumber,
         desHotel: req.body.hotel.desHotel,
         zip: req.body.hotel.zip,
-
         // touristAttraction: req.body.hotel.touristAttraction,
         // province: req.body.hotel.province,
         // city: req.body.hotel.city,
         // maxDay: req.body.hotel.maxDay,
         status: req.body.hotel.status
     });
-
     const faciliti = new Facilities({
-        COAlarmSensor: req.body.facilities.COAlarmSensor,
-        Dryer: req.body.facilities.Dryer,
-        Fireplace: req.body.facilities.Fireplace,
-        FirstAidKit: req.body.facilities.FirstAidKit,
-        Hairdryer: req.body.facilities.Hairdryer,
-        Kitchen: req.body.facilities.Kitchen,
-        Shampoo: req.body.facilities.Shampoo,
-        SmokeDetector: req.body.facilities.SmokeDetector,
-        Smoking: req.body.facilities.Smoking,
-        TowelsOfAllKinds: req.body.facilities.TowelsOfAllKinds,
-        airConditional: req.body.facilities.airConditional,
-        beddingSet: req.body.facilities.beddingSet,
-        cableTelevision: req.body.facilities.cableTelevision,
-        coffee: req.body.facilities.coffee,
-        doorStaff: req.body.facilities.doorStaff,
-        elevatorInHotel: req.body.facilities.elevatorInHotel,
-        fireExtinguisher: req.body.facilities.fireExtinguisher,
-        freeBreakfast: req.body.facilities.freeBreakfast,
-        freeInternet: req.body.facilities.freeInternet,
-        freeParking: req.body.facilities.freeParking,
-        freeWifi: req.body.facilities.freeWifi,
-        gymRoom: req.body.facilities.gymRoom,
-        heaters: req.body.facilities.heaters,
-        hotTub: req.body.facilities.hotTub,
-        indooPool: req.body.facilities.indooPool,
-        internetCharge: req.body.facilities.internetCharge,
-        ironingMachine: req.body.facilities.ironingMachine,
-        outdoorSwimmingPool: req.body.facilities.outdoorSwimmingPool,
-        petsAllowed: req.body.facilities.petsAllowed,
-        privatePool: req.body.facilities.privatePool,
-        smartKey: req.body.facilities.smartKey,
-        tea: req.body.facilities.tea,
-        teaMaker: req.body.facilities.teaMaker,
-        television: req.body.facilities.television,
-        washingMachine: req.body.facilities.washingMachine,
-        wheelchairAccessible: req.body.facilities.wheelchairAccessible,
-        wifiCharge: req.body.facilities.wifiCharge,
-        wirelessBell: req.body.facilities.wirelessBell,
-        workspace: req.body.facilities.workspace,
+        COAlarmSensor: req.body.hotel.facilities.COAlarmSensor,
+        Dryer: req.body.hotel.facilities.Dryer,
+        Fireplace: req.body.hotel.facilities.Fireplace,
+        FirstAidKit: req.body.hotel.facilities.FirstAidKit,
+        Hairdryer: req.body.hotel.facilities.Hairdryer,
+        Kitchen: req.body.hotel.facilities.Kitchen,
+        Shampoo: req.body.hotel.facilities.Shampoo,
+        SmokeDetector: req.body.hotel.facilities.SmokeDetector,
+        Smoking: req.body.hotel.facilities.Smoking,
+        TowelsOfAllKinds: req.body.hotel.facilities.TowelsOfAllKinds,
+        airConditional: req.body.hotel.facilities.airConditional,
+        beddingSet: req.body.hotel.facilities.beddingSet,
+        cableTelevision: req.body.hotel.facilities.cableTelevision,
+        coffee: req.body.hotel.facilities.coffee,
+        doorStaff: req.body.hotel.facilities.doorStaff,
+        elevatorInHotel: req.body.hotel.facilities.elevatorInHotel,
+        fireExtinguisher: req.body.hotel.facilities.fireExtinguisher,
+        freeBreakfast: req.body.hotel.facilities.freeBreakfast,
+        freeInternet: req.body.hotel.facilities.freeInternet,
+        freeParking: req.body.hotel.facilities.freeParking,
+        freeWifi: req.body.hotel.facilities.freeWifi,
+        gymRoom: req.body.hotel.facilities.gymRoom,
+        heaters: req.body.hotel.facilities.heaters,
+        hotTub: req.body.hotel.facilities.hotTub,
+        indooPool: req.body.hotel.facilities.indooPool,
+        internetCharge: req.body.hotel.facilities.internetCharge,
+        ironingMachine: req.body.hotel.facilities.ironingMachine,
+        outdoorSwimmingPool: req.body.hotel.facilities.outdoorSwimmingPool,
+        petsAllowed: req.body.hotel.facilities.petsAllowed,
+        privatePool: req.body.hotel.facilities.privatePool,
+        smartKey: req.body.hotel.facilities.smartKey,
+        tea: req.body.hotel.facilities.tea,
+        teaMaker: req.body.hotel.facilities.teaMaker,
+        television: req.body.hotel.facilities.television,
+        washingMachine: req.body.hotel.facilities.washingMachine,
+        wheelchairAccessible: req.body.hotel.facilities.wheelchairAccessible,
+        wifiCharge: req.body.hotel.facilities.wifiCharge,
+        wirelessBell: req.body.hotel.facilities.wirelessBell,
+        workspace: req.body.hotel.facilities.workspace,
     });
+    let roomDetailsRes = []
 
-    Users.findOne({email: req.body.hotel.userEmail}, function (err, userSchema) {
+    Users.findOne({email: req.body.hotel.email}, function (err, userSchema) {
         if (err) {
             return res.send({
                 status: 401,
@@ -96,52 +96,35 @@ exports.createHotel = (req, res) => {
             hotel.user = userSchema;
             hotel.save().then(() => {
                 faciliti.hotelObj = hotel;
-                //đang code
-                faciliti.save().then(() => {
-                    reservationTime.hotelObj = hotel;
-                    reservationTime.save().then(() => {
-                        cancelRoom.hotelObj = hotel;
-                        cancelRoom.save().then(() => {
-                            req.body.roomDetail.forEach(item => {
-                                console.log(item);
-                                let roomDetail = new RoomDetails({
-                                    capacity: item.capacity,
-                                    bathroom: item.bathroom,
-                                    promotion: item.promotion,
-                                    price: item.price,
-                                    priceExtra: item.priceExtra,
-                                    bedroom: item.bedroom,
-                                    bedroomDetail: item.bedroomDetail
-                                });
-                                roomDetail.hotelObj = hotel;
-                                roomDetail.save().catch(err => {
-                                    res.status(500).send({
-                                        message: err.message || 'Some error occurred while creating the roomdetail'
-                                    })
-                                });
-                            });
-                            res.status(200).send({
-                                hotel: hotel,
-                                faciliti: faciliti,
-                                reservationTime: reservationTime,
-                                cancelRoom: cancelRoom,
-                                message: 'Create hotel successfuly'
-                            })
-                        }).catch(err => {
-                            res.status(500).send({
-                                message: err.message || 'Some error occurred while creating the cancelRoom'
-                            })
-                        });
-                    }).catch(err => {
+                faciliti.save()
+                req.body.hotel.formArrayRoomNumber.forEach(item => {
+                    let bedRoomDetails = [];
+                    item.bedRoomsDetails.forEach(item => {
+                        bedRoomDetails.push(item)
+                    })
+                    let roomDetails = new RoomDetails({
+                        accommodates: item.accommodates,
+                        bathRooms: item.bathRooms,
+                        bedRooms: item.bedRooms,
+                        maxDay: item.maxDay,
+                        price: item.price,
+                        bedroomDetail: bedRoomDetails
+                    });
+
+                    roomDetails.hotelObj = hotel;
+                    roomDetails.save().catch(err => {
                         res.status(500).send({
-                            message: err.message || 'Some error occurred while creating the reservationTime'
+                            message: err.message || 'Some error occurred while creating the roomdetail'
                         })
                     });
-                }).catch(err => {
-                    res.status(500).send({
-                        message: err.message || 'Some error occurred while creating the facilities'
-                    })
+                    roomDetailsRes.push(roomDetails)
                 });
+                res.status(200).send({
+                    hotel: hotel,
+                    faciliti: faciliti,
+                    roomDetails: roomDetailsRes,
+                    message: 'Create hotel successfuly'
+                })
             }).catch(err => {
                 res.status(500).send({
                     message: err.message || 'Some error occurred while creating the hotel'
