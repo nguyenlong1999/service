@@ -18,10 +18,10 @@ const HotelSchema = mongoose.Schema({
     zip: {type: String, default: ''},
     status: {type: Number, default: ''},
 
-    touristAttraction: {type: String, default: ''},
-    province: {type: String, default: ''},
-    city: {type: String, default: ''},
-    maxDay: {type: Number, default: ''},
+    // touristAttraction: {type: String, default: ''},
+    // province: {type: String, default: ''},
+    // city: {type: String, default: ''},
+    // maxDay: {type: Number, default: ''},
 }, {
     timestamps: true
 });

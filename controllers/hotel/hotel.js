@@ -133,3 +133,18 @@ exports.createHotel = (req, res) => {
         }
     });
 };
+
+exports.getHotel = (
+    async (req, res) => {
+        await Hotels.find().then(
+            hotel => {
+                res.status(200).send(hotel)
+            }
+        ).catch(err => {
+            console.log('not found hotel');
+            res.send({
+                'status': 404,
+                'message': err.message || 'Some error occurred while finding hotel'
+            })
+        })
+    });
