@@ -7,6 +7,7 @@ const ChatMessageSchema = mongoose.Schema({
   imageUrl: { type: String, default: '' },
   videoUrl: { type: String, default: '' },
   news: { type: Number, default: 0 },
+  sequence: { type: Number, default: 0 },
   description: { type: String, default: 'Tin nhắn nè!' }
 }, {
   timestamps: true

@@ -49,6 +49,27 @@ exports.createChatMessage = (req, res) => {
   });
   const fromUserId = mongoose.Types.ObjectId(req.body.chatMess.fromUser);
   const toUserId = mongoose.Types.ObjectId(req.body.chatMess.toUser);
+  /* Thêm sequence tự tăng cho tất cả bản ghi */
+
+  // ChatMessages.find({}).then(count => {
+  //   chatMessage.sequence = (count.length) + 1;
+  // });
+
+  /* Thêm sequence tự tăng kiểu 2 user chat với nhau */
+
+  // ChatMessages.find({
+  //   $or: [
+  //     { fromUser: fromUserId, toUser: toUserId },
+  //     { fromUser: toUserId, toUser: fromUserId },
+  //   ]
+  // }).then(count => {
+  //   console.log(count);
+  //   chatMessage.sequence = (count.length) + 1;
+  //   return res.send({
+  //     chatMessage: chatMessage
+  //   });
+  // });
+
   Users.findOne({ _id: fromUserId }, function (err, userSchema) {
     if (err) {
       return res.send({
@@ -57,7 +78,7 @@ exports.createChatMessage = (req, res) => {
       });
     }
     if (userSchema) {
-      Users.findOne({ _id: fromUserId }, function (err, user2Schema) {
+      Users.findOne({ _id: toUserId }, function (err, user2Schema) {
         if (err) {
           return res.send({
             status: 401,
