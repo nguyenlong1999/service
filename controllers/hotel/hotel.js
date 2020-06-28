@@ -136,6 +136,7 @@ exports.createHotel = (req, res) => {
 
 exports.getHotel = (
     async (req, res) => {
+
         await Hotels.find().then(
             hotel => {
                 res.status(200).send(hotel)
@@ -148,3 +149,37 @@ exports.getHotel = (
             })
         })
     });
+
+exports.getHotelById = async (req, res) => {
+    const hotelObjId = mongoose.Types.ObjectId(req.params.id);
+    let objectRes = []
+
+    let tienNghi = new Facilities;
+    let listRoomDetails = []
+    try {
+        await Facilities.find({
+            "hotelObj._id": hotelObjId
+        }).then(
+            facilities => {
+                // res.status(200).send(facilities)
+                tienNghi = facilities
+            }
+        ).then(
+            await RoomDetails.find({
+                "hotelObj._id": hotelObjId
+            }).then(
+                roomDetails => {
+                    listRoomDetails.push(roomDetails)
+                }
+            )
+        )
+        objectRes.push(tienNghi);
+        objectRes.push(listRoomDetails)
+        res.status(200).send(objectRes)
+    } catch (error) {
+        res.send({
+            'status': 404,
+            'message': error.message || 'Some error occurred while finding facilities'
+        })
+    }
+};
