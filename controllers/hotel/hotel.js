@@ -95,7 +95,7 @@ exports.createHotel = (req, res) => {
         } else {
             hotel.user = userSchema;
             hotel.save().then(() => {
-                faciliti.hotelObj = hotel._id;
+                faciliti.hotelObj = hotel;
                 faciliti.save()
                 req.body.hotel.formArrayRoomNumber.forEach(item => {
                     let bedRoomDetails = [];
@@ -111,7 +111,7 @@ exports.createHotel = (req, res) => {
                         bedroomDetail: bedRoomDetails
                     });
 
-                    roomDetails.hotelObj = hotel._id;
+                    roomDetails.hotelObj = hotel;
                     roomDetails.save().catch(err => {
                         res.status(500).send({
                             message: err.message || 'Some error occurred while creating the roomdetail'
@@ -135,7 +135,7 @@ exports.createHotel = (req, res) => {
 };
 
 exports.updateHotel = (req, res) => {
-    let id = mongoose.Types.ObjectId(req.body.hotel._id);
+    let id = mongoose.Types.ObjectId(req.body.hotel.id);
     Hotels.findOne({ _id: id }, function (err, hotel) {
         if (err) {
             return res.send({
@@ -144,12 +144,12 @@ exports.updateHotel = (req, res) => {
             });
         }
         const userId = req.email;
-        if (userId !== hotel.user.email) {
-            return res.send({
-                'status': 401,
-                'message': 'Thí chú không có quyền. Vui lòng liên hệ admin nhé!'
-            })
-        }
+        // if (userId !== hotel.user.email) {
+        //     return res.send({
+        //         'status': 401,
+        //         'message': 'Thí chú không có quyền. Vui lòng liên hệ admin nhé!'
+        //     })
+        // }
         hotel.name = req.body.hotel.name;
         hotel.address = req.body.hotel.address;
         hotel.guideToHotel = req.body.hotel.guideToHotel;
@@ -167,7 +167,8 @@ exports.updateHotel = (req, res) => {
         hotel.zip = req.body.hotel.zip;
         hotel.status = req.body.hotel.status
         hotel.save().then(hotelUpdate => {
-            Facilities.findOne({ _id: id }, function (err, facilitie) {
+            Facilities.findOne({"hotelObj._id": id }, function (err, facilitie) {
+                console.log()
                 if (err) {
                     return res.send({
                         status: 401,
@@ -214,10 +215,12 @@ exports.updateHotel = (req, res) => {
                 facilitie.wifiCharge = req.body.hotel.facilities.wifiCharge;
                 facilitie.wirelessBell = req.body.hotel.facilities.wirelessBell;
                 facilitie.workspace = req.body.hotel.facilities.workspace;
-                faciliti.save().then(facilitiUpdate => {
+                facilitie.save().then(facilitiUpdate => {
                     let roomDetailsRes = [];
                     RoomDetails.find({ "hotelObj._id": id }, function (err, data) {
                         data.forEach(itemCurrent => {
+                            console.log(itemCurrent1
+                            )
                             req.body.hotel.formArrayRoomNumber.forEach(itemUpdate => {
                                 if (itemCurrent._id === itemUpdate._id) {
                                     let bedRoomDetails = [];
