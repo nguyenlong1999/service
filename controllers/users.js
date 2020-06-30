@@ -776,11 +776,11 @@ exports.updateRole = async (req, res) => {
         } else {
             console.log(user);
             user.role = req.body.user.role;
-            if (user.role === 0) {
-                user.warningReport = 0;
-            } else {
-                user.warningReport = user.role;
-            }
+            // if (user.role === 0) {
+            //     user.warningReport = 0;
+            // } else {
+            //     user.warningReport = user.role;
+            // }
             user.save((function (err) {
                 if (err) {
                     return res.send({
@@ -927,11 +927,11 @@ exports.openUser = async (req, res) => {
                             }
                         });
                         let mailOptions = {
-                            from: 'Ban quản trị website Ẩm thực ăn chay <amthuc.anchay.2020@gmail.com>', // sender address
+                            from: 'Ban quản trị website BookingHotel <amthuc.anchay.2020@gmail.com>', // sender address
                             to: user.email, // list of receivers
-                            subject: 'Chào mừng đến trang web Ẩm thực Ăn chay', // Subject line
+                            subject: 'Chào mừng đến trang web BookingHotel', // Subject line
                             text: req.body.body, // plain text body
-                            html: 'Xin chúc mừng! Tài khoản của bạn đã được mở. Vui lòng đăng nhập trang chủ website Ẩm thực Ăn chay' +
+                            html: 'Xin chúc mừng! Tài khoản của bạn đã được mở. Vui lòng đăng nhập trang chủ website BookingHotel' +
                                 ': https://amthuc-anchay-poly.herokuapp.com/'
                             // html body
                         };
