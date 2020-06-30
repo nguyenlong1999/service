@@ -174,6 +174,7 @@ exports.updateHotel = (req, res) => {
                         message: err
                     });
                 }
+                facilitie.hotelObj = hotelUpdate;
                 facilitie.COAlarmSensor = req.body.hotel.facilities.COAlarmSensor;
                 facilitie.Dryer = req.body.hotel.facilities.Dryer;
                 facilitie.Fireplace = req.body.hotel.facilities.Fireplace;
@@ -223,6 +224,7 @@ exports.updateHotel = (req, res) => {
                                     itemUpdate.bedRoomsDetails.forEach(item => {
                                         bedRoomDetails.push(item)
                                     })
+                                    itemCurrent.hotelObj = hotelUpdate;
                                     itemCurrent.accommodates = itemUpdate.accommodates;
                                     itemCurrent.bathRooms = itemUpdate.bathRooms;
                                     itemCurrent.bedRooms = itemUpdate.bedRooms;
