@@ -166,18 +166,18 @@ exports.create =
                         port: 465,
                         secure: true,
                         auth: {
-                            user: 'amthuc.anchay.2020@gmail.com',
-                            pass: 'Colenvuoi1@'
+                            user: 'longquangdeptrai@gmail.com',
+                            pass: '123456a@A'
                         }
                     });
                     let mailOptions = {
-                        from: 'Ban quản trị website Ẩm thực ăn chay <amthuc.anchay.2020@gmail.com>', // sender address
+                        from: 'Ban quản trị website booking.com <longquangdeptrai@gmail.com>', // sender address
                         to: user.email, // list of receivers
-                        subject: 'Chào mừng đến trang web Ẩm thực Ăn chay', // Subject line
+                        subject: 'Chào mừng đến trang web booking', // Subject line
                         text: req.body.body, // plain text body
-                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản trên trang web Ẩm thực ăn chay ' +
+                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản trên trang booking.com ' +
                             '<br> Vui lòng xác thực tài khoản đăng ký bằng link sau:' +
-                            '<br> https://amthuc-anchay-poly.herokuapp.com/active/' + finalUser._id
+                            '<br> https://localhost:4200/active/' + finalUser._id
                         // html body
                     };
 
@@ -267,12 +267,14 @@ exports.createAdminAccount =
                             pass: 'Colenvuoi1@'
                         }
                     });
+
+
                     let mailOptions = {
-                        from: 'Ban quản trị website Ẩm thực ăn chay <amthuc.anchay.2020@gmail.com>', // sender address
+                        from: 'Ban quản trị website booking.com <longquangdeptrai@gmail.com>', // sender address
                         to: user.email, // list of receivers
-                        subject: 'Chào mừng đến trang web Ẩm thực Ăn chay', // Subject line
+                        subject: 'Chào mừng đến trang web booking', // Subject line
                         text: req.body.body, // plain text body
-                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản quản lý trang trên trang web Ẩm thực ăn chay '
+                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản quản lý trang trên trang web Booking.com '
                         // html body
                     };
 
@@ -334,8 +336,9 @@ exports.resetPassword =
                             pass: 'Colenvuoi1@'
                         }
                     });
+
                     let mailOptions = {
-                        from: 'Ban quản trị website Ẩm thực ăn chay <amthuc.anchay.2020@gmail.com>', // sender address
+                        from: 'Ban quản trị website booking.com <longquangdeptrai@gmail.com>', // sender address
                         to: user.email, // list of receivers
                         subject: 'Mật khẩu thay đổi', // Subject line
                         text: req.body.body, // plain text body
@@ -516,7 +519,7 @@ exports.login =
                         email: userSchema.email
                     });
                     if (userSchema.imageUrl === undefined) {
-                        userSchema.imageUrl = 'jbiajl3qqdzshdw0z749';
+                        userSchema.imageUrl = './uploads/default-avatar.png';
                     }
                     role = userSchema.role;
                     if (role === 0) {
@@ -626,7 +629,7 @@ exports.loginAdmin =
                         email: userSchema.email
                     });
                     if (userSchema.imageUrl === undefined) {
-                        userSchema.imageUrl = 'jbiajl3qqdzshdw0z749';
+                        userSchema.imageUrl = './uploads/default-avatar.png';
                     }
                     role = userSchema.role;
                     if (role === 0) {
@@ -865,12 +868,12 @@ exports.bannedUser = async (req, res) => {
                             }
                         });
                         let mailOptions = {
-                            from: 'Ban quản trị website Ẩm thực ăn chay <amthuc.anchay.2020@gmail.com>', // sender address
+                            from: 'Ban quản trị website booking.com <longquangdeptrai@gmail.com>', // sender address
                             to: user.email, // list of receivers
-                            subject: 'Chào mừng đến trang web Ẩm thực Ăn chay', // Subject line
+                            subject: 'Chào mừng đến trang web Booking', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Tài khoản của bạn đã bị khóa vì vi pham quy định của diễn đàn, pháp luật của nhà nước.' +
-                                'Vui lòng liên hệ lại với email: amthuc.monchay.2020@gmaillcom'
+                                'Vui lòng liên hệ lại với email: longdeptrai@gmaillcom'
                             // html body
                         };
 
@@ -922,17 +925,17 @@ exports.openUser = async (req, res) => {
                             port: 465,
                             secure: true,
                             auth: {
-                                user: 'amthuc.anchay.2020@gmail.com',
-                                pass: 'Colenvuoi1@'
+                                user: 'longquangdeptrai@gmail.com',
+                                pass: '123456a@A'
                             }
                         });
                         let mailOptions = {
-                            from: 'Ban quản trị website BookingHotel <amthuc.anchay.2020@gmail.com>', // sender address
+                            from: 'Ban quản trị website BookingHotel <longquangdeptrai@gmail.com>', // sender address
                             to: user.email, // list of receivers
                             subject: 'Chào mừng đến trang web BookingHotel', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Xin chúc mừng! Tài khoản của bạn đã được mở. Vui lòng đăng nhập trang chủ website BookingHotel' +
-                                ': https://amthuc-anchay-poly.herokuapp.com/'
+                                ': https://google.com/'
                             // html body
                         };
 
@@ -977,17 +980,17 @@ exports.activeMember = async (req, res) => {
                         port: 465,
                         secure: true,
                         auth: {
-                            user: 'amthuc.anchay.2020@gmail.com',
-                            pass: 'Colenvuoi1@'
+                            user: 'longquangdeptrai@gmail.com',
+                            pass: '123456a@A'
                         }
                     });
                     let mailOptions = {
-                        from: 'Ban quản trị website Ẩm thực ăn chay <amthuc.anchay.2020@gmail.com>', // sender address
+                        from: 'Ban quản trị website Booking <longquangdeptrai@gmail.com>', // sender address
                         to: user.email, // list of receivers
-                        subject: 'Chào mừng đến trang web Ẩm thực Ăn chay', // Subject line
+                        subject: 'Chào mừng đến trang web Booking', // Subject line
                         text: req.body.body, // plain text body
-                        html: 'Xin chúc mừng! Tài khoản của bạn đã được mở. Vui lòng đăng nhập trang chủ website Ẩm thực Ăn chay' +
-                            ': https://amthuc-anchay-poly.herokuapp.com/'
+                        html: 'Xin chúc mừng! Tài khoản của bạn đã được mở. Vui lòng đăng nhập trang chủ website Booking' +
+                            ': https://google.com/'
                         // html body
                     };
 
