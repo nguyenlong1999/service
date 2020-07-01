@@ -136,6 +136,7 @@ exports.createHotel = (req, res) => {
 
 exports.updateHotel = (req, res) => {
     let id = mongoose.Types.ObjectId(req.body.hotel.id);
+    let roomDetailsRes = [];
     Hotels.findOne({ _id: id }, function (err, hotel) {
         if (err) {
             return res.send({
@@ -168,7 +169,6 @@ exports.updateHotel = (req, res) => {
         hotel.status = req.body.hotel.status
         hotel.save().then(hotelUpdate => {
             Facilities.findOne({ "hotelObj._id": id }, function (err, facilitie) {
-                console.log()
                 if (err) {
                     return res.send({
                         status: 401,
@@ -216,55 +216,42 @@ exports.updateHotel = (req, res) => {
                 facilitie.wirelessBell = req.body.hotel.facilities.wirelessBell;
                 facilitie.workspace = req.body.hotel.facilities.workspace;
                 facilitie.save().then(facilitiUpdate => {
-                    let roomDetailsRes = [];
-                    RoomDetails.find({ "hotelObj._id": id }, function (err, data) {
-                        let roomDetailsRes = [];
-                        data.forEach(itemCurrent => {
-                            req.body.hotel.formArrayRoomNumber.forEach(itemUpdate => {
-                                // console.log(itemCurrent._id + '____' + itemUpdate._id);
-                                if (itemCurrent._id == itemUpdate._id) {
-                                    let bedRoomDetails = [];
-                                    itemUpdate.bedRoomsDetails.forEach(item => {
-                                        bedRoomDetails.push(item)
-                                    });
-                                    itemCurrent.hotelObj = hotelUpdate;
-                                    itemCurrent.accommodates = itemUpdate.accommodates;
-                                    itemCurrent.bathRooms = itemUpdate.bathRooms;
-                                    itemCurrent.bedRooms = itemUpdate.bedRooms;
-                                    itemCurrent.maxDay = itemUpdate.maxDay;
-                                    itemCurrent.price = itemUpdate.price;
-                                    itemCurrent.bedRoomDetails = bedRoomDetails;
-                                    itemCurrent.save().then(newItem => {
-                                        roomDetailsRes.push(newItem);
-                                    }).catch(err => {
-                                        res.status(500).send({
-                                            message: err.message || 'Some error occurred while update the roomdetail'
-                                        })
-                                    });
-                                }
-                                else {
-                                    let idDel = mongoose.Types.ObjectId(itemCurrent._id);
-                                    RoomDetails.deleteOne({ _id: idDel }, function (err, success) {
-                                        if (err) {
-                                            return res.send({
-                                                status: 401,
-                                                message: err
-                                            });
-                                        } else {
-                                            console.log('delete');
-                                        }
-                                    });
-                                }
-
+                    RoomDetails.deleteMany({ "hotelObj._id": id }, function (err, success) {
+                        if (err) {
+                            return res.send({
+                                status: 401,
+                                message: err
                             });
-                        });
-                        console.log(roomDetailsRes);
-                        return res.send({
-                            status: 401,
-                            hotel: hotelUpdate,
-                            faciliti: facilitiUpdate,
-                            roomDetail: roomDetailsRes
-                        });
+                        }
+                        if (success) {
+                            req.body.hotel.formArrayRoomNumber.forEach(item => {
+                                let bedRoomDetails = [];
+                                item.bedRoomsDetails.forEach(item => {
+                                    bedRoomDetails.push(item)
+                                })
+                                let roomDetails = new RoomDetails({
+                                    accommodates: item.accommodates,
+                                    bathRooms: item.bathRooms,
+                                    bedRooms: item.bedRooms,
+                                    maxDay: item.maxDay,
+                                    price: item.price,
+                                    bedroomDetail: bedRoomDetails
+                                });
+                                roomDetails.hotelObj = hotel;
+                                roomDetails.save().catch(err => {
+                                    res.status(500).send({
+                                        message: err.message || 'Some error occurred while creating the roomdetail'
+                                    })
+                                });
+                                roomDetailsRes.push(roomDetails);
+                            });
+                            res.status(200).send({
+                                hotel: hotelUpdate,
+                                faciliti: facilitiUpdate,
+                                roomDetails: roomDetailsRes,
+                                message: 'Update hotel successfuly'
+                            })
+                        }
                     });
                 }).catch(err => {
                     res.status(500).send({
@@ -280,21 +267,17 @@ exports.updateHotel = (req, res) => {
     });
 };
 
-exports.getHotel = (
-    async (req, res) => {
-
-        await Hotels.find().then(
-            hotel => {
-                res.status(200).send(hotel)
-            }
-        ).catch(err => {
-            console.log('not found hotel');
-            res.send({
-                'status': 404,
-                'message': err.message || 'Some error occurred while finding hotel'
-            })
+exports.getHotel = (async (req, res) => {
+    await Hotels.find().then(hotel => {
+        res.status(200).send(hotel)
+    }).catch(err => {
+        console.log('not found hotel');
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding hotel'
         })
-    });
+    })
+});
 
 exports.getHotelById = async (req, res) => {
     const hotelObjId = mongoose.Types.ObjectId(req.params.id);
@@ -329,3 +312,11 @@ exports.getHotelById = async (req, res) => {
         })
     }
 };
+
+exports.approvalHotel = (req, res) => {
+    return;
+};
+
+exports.blockHotel = (req, res) => {
+    return;
+}
