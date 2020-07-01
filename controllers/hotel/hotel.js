@@ -167,7 +167,7 @@ exports.updateHotel = (req, res) => {
         hotel.zip = req.body.hotel.zip;
         hotel.status = req.body.hotel.status
         hotel.save().then(hotelUpdate => {
-            Facilities.findOne({"hotelObj._id": id }, function (err, facilitie) {
+            Facilities.findOne({ "hotelObj._id": id }, function (err, facilitie) {
                 console.log()
                 if (err) {
                     return res.send({
@@ -218,15 +218,15 @@ exports.updateHotel = (req, res) => {
                 facilitie.save().then(facilitiUpdate => {
                     let roomDetailsRes = [];
                     RoomDetails.find({ "hotelObj._id": id }, function (err, data) {
+                        let roomDetailsRes = [];
                         data.forEach(itemCurrent => {
-                            console.log(itemCurrent1
-                            )
                             req.body.hotel.formArrayRoomNumber.forEach(itemUpdate => {
-                                if (itemCurrent._id === itemUpdate._id) {
+                                // console.log(itemCurrent._id + '____' + itemUpdate._id);
+                                if (itemCurrent._id == itemUpdate._id) {
                                     let bedRoomDetails = [];
                                     itemUpdate.bedRoomsDetails.forEach(item => {
                                         bedRoomDetails.push(item)
-                                    })
+                                    });
                                     itemCurrent.hotelObj = hotelUpdate;
                                     itemCurrent.accommodates = itemUpdate.accommodates;
                                     itemCurrent.bathRooms = itemUpdate.bathRooms;
@@ -234,20 +234,36 @@ exports.updateHotel = (req, res) => {
                                     itemCurrent.maxDay = itemUpdate.maxDay;
                                     itemCurrent.price = itemUpdate.price;
                                     itemCurrent.bedRoomDetails = bedRoomDetails;
-                                    itemCurrent.save().catch(err => {
+                                    itemCurrent.save().then(newItem => {
+                                        roomDetailsRes.push(newItem);
+                                    }).catch(err => {
                                         res.status(500).send({
                                             message: err.message || 'Some error occurred while update the roomdetail'
                                         })
                                     });
-                                    roomDetailsRes.push(itemCurrent);
                                 }
-                            })
+                                else {
+                                    let idDel = mongoose.Types.ObjectId(itemCurrent._id);
+                                    RoomDetails.deleteOne({ _id: idDel }, function (err, success) {
+                                        if (err) {
+                                            return res.send({
+                                                status: 401,
+                                                message: err
+                                            });
+                                        } else {
+                                            console.log('delete');
+                                        }
+                                    });
+                                }
+
+                            });
                         });
+                        console.log(roomDetailsRes);
                         return res.send({
+                            status: 401,
                             hotel: hotelUpdate,
                             faciliti: facilitiUpdate,
-                            roomDetail: roomDetailsRes,
-                            status: 200
+                            roomDetail: roomDetailsRes
                         });
                     });
                 }).catch(err => {
