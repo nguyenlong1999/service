@@ -11,6 +11,7 @@ const UsersSchema = new Schema({
     lastName: String,
     birthday: Number,
     materialStatus: String,
+    phone: String,
     signature: String,
     introduction: String,
     gender: { type: Number, default: 1 },

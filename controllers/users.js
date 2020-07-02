@@ -15,21 +15,8 @@ const Messages = mongoose.model('Messages');
 exports.updateUser = async (req, res) => {
     console.log('helo' + req.body.user.id);
     const mongoose = require('mongoose');
-    const userObject = {
-        _id: req.body.user.id,
-        updateAccount: req.email,
-        name: req.body.user.name,
-        lastName: req.body.user.lastName,
-        birthday: req.body.user.birthday,
-        gender: req.body.user.gender,
-        materialStatus: req.body.user.materialStatus,
-        signature: req.body.user.signature,
-        introduction: req.body.user.introduction,
-        imageUrl: req.body.user.imageUrl,
-    };
+    console.log(req.body.user);
     const userId = req.userId.toString();
-    console.log(userId);
-    console.log(req.body.user.id);
     if (userId !== req.body.user.id) {
         return res.send({
             'status': 401,
@@ -46,79 +33,32 @@ exports.updateUser = async (req, res) => {
             })
         } else {
             let check = false;
-            console.log(userObject);
-
-            user.updateAccount = req.email,
-                user.name = userObject.name,
-                user.lastName = userObject.lastName,
-                user.birthday = userObject.birthday,
-                user.gender = userObject.gender,
-                user.materialStatus = userObject.materialStatus,
-                user.signature = userObject.signature,
-                user.introduction = userObject.introduction,
-                user.imageUrl = userObject.imageUrl,
-                user.save((function (err) {
-                    if (err) {
-                        return res.send({
-                            status: 401,
-                            message: "Cập nhật thông tin tài khoản không thành công"
-                        });
-                    } else {
-                        check = true;
-                        return res.status(200).send({
-                            status: 200,
-                            user: user,
-                            message: 'Cập nhật thông tin tài khoản thành công'
-                        });
-                    }
-                }));
-            Recipe.find()
-                .sort({ status: 1 })
-                .limit(100)
-                .then(recipes => {
-                    recipes.forEach(recipe => {
-                        if (recipe.user.email === user.email) {
-                            console.log('update công thức' + recipe.recipeName);
-                            recipe.user = user;
-                            recipe.save((function (err) {
-                                if (err) {
-                                    console.log('update công thức thất bại' + recipe.recipeName);
-                                } else {
-                                    console.log('update công thức thành công' + recipe.recipeName);
-                                }
-                            }));
-                        }
-                    })
-                }).catch(() => {
-                    console.log('lỗi khi update ảnh recipe');
-                });
-            Gallery.find()
-                .then(gallerys => {
-                    gallerys.forEach(gallery => {
-                        if (gallery.user.email === user.email) {
-                            gallery.user = user;
-                            const recipes = gallery.recipe;
-                            console.log(gallery.recipe.length);
-                            const arrayConfirm = null;
-                            recipes.forEach(recipe => {
-                                console.log(recipe.recipeName + gallery.user.name);
-                                if (recipe.user.email === user.email) {
-                                    recipe.user = user;
-                                    console.log(recipe.recipeName)
-                                }
-                            });
-                            gallery.save((function (err) {
-                                if (err) {
-                                    console.log('update bộ sưu tập thất bại' + gallery.name);
-                                } else {
-                                    console.log('update bộ sưu tập thành công' + gallery.name);
-                                }
-                            }));
-                        }
+            user.updateAccount = req.email;
+            user.name = req.body.user.name;
+            user.phone = req.body.user.phone;
+            user.lastName = req.body.user.lastName;
+            user.birthday = req.body.user.birthday;
+            user.gender = req.body.user.gender;
+            user.materialStatus = req.body.user.materialStatus;
+            user.signature = req.body.user.signature;
+            user.introduction = req.body.user.introduction;
+            user.imageUrl = req.body.user.imageUrl;
+            user.imageUrl = user.imageUrl === undefined || user.imageUrl === '' ? 'default-avatar.png' : user.imageUrl;
+            user.save((function (err) {
+                if (err) {
+                    return res.send({
+                        status: 401,
+                        message: "Cập nhật thông tin tài khoản không thành công"
                     });
-                }).catch(() => {
-                    console.log('lỗi khi update ảnh recipe');
-                });
+                } else {
+                    check = true;
+                    return res.status(200).send({
+                        status: 200,
+                        user: user,
+                        message: 'Cập nhật thông tin tài khoản thành công'
+                    });
+                }
+            }));
         }
     });
 };
