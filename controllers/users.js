@@ -166,18 +166,18 @@ exports.create =
                         port: 465,
                         secure: true,
                         auth: {
-                            user: 'longquangdeptrai@gmail.com',
+                            user: 'booking.hotel.com.2020@gmail.com',
                             pass: '123456a@A'
                         }
                     });
                     let mailOptions = {
-                        from: 'Ban quản trị website booking.com <longquangdeptrai@gmail.com>', // sender address
+                        from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
                         to: user.email, // list of receivers
                         subject: 'Chào mừng đến trang web booking', // Subject line
                         text: req.body.body, // plain text body
                         html: 'Chúc mừng bạn đã đăng ký thành công tài khoản trên trang booking.com ' +
                             '<br> Vui lòng xác thực tài khoản đăng ký bằng link sau:' +
-                            '<br> https://localhost:4200/active/' + finalUser._id
+                            '<br> localhost:4200/active/' + finalUser._id
                         // html body
                     };
 
@@ -263,14 +263,14 @@ exports.createAdminAccount =
                         port: 465,
                         secure: true,
                         auth: {
-                            user: 'amthuc.anchay.2020@gmail.com',
-                            pass: 'Colenvuoi1@'
+                            user: 'booking.hotel.com.2020@gmail.com',
+                            pass: '123456a@A'
                         }
                     });
 
 
                     let mailOptions = {
-                        from: 'Ban quản trị website booking.com <longquangdeptrai@gmail.com>', // sender address
+                        from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
                         to: user.email, // list of receivers
                         subject: 'Chào mừng đến trang web booking', // Subject line
                         text: req.body.body, // plain text body
@@ -332,13 +332,13 @@ exports.resetPassword =
                         port: 465,
                         secure: true,
                         auth: {
-                            user: 'amthuc.anchay.2020@gmail.com',
-                            pass: 'Colenvuoi1@'
+                            user: 'booking.hotel.com.2020@gmail.com',
+                            pass: '123456a@A'
                         }
                     });
 
                     let mailOptions = {
-                        from: 'Ban quản trị website booking.com <longquangdeptrai@gmail.com>', // sender address
+                        from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
                         to: user.email, // list of receivers
                         subject: 'Mật khẩu thay đổi', // Subject line
                         text: req.body.body, // plain text body
@@ -863,12 +863,12 @@ exports.bannedUser = async (req, res) => {
                             port: 465,
                             secure: true,
                             auth: {
-                                user: 'amthuc.anchay.2020@gmail.com',
-                                pass: 'Colenvuoi1@'
+                                user: 'booking.hotel.com.2020@gmail.com',
+                                pass: '123456a@A'
                             }
                         });
                         let mailOptions = {
-                            from: 'Ban quản trị website booking.com <longquangdeptrai@gmail.com>', // sender address
+                            from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
                             to: user.email, // list of receivers
                             subject: 'Chào mừng đến trang web Booking', // Subject line
                             text: req.body.body, // plain text body
@@ -925,12 +925,12 @@ exports.openUser = async (req, res) => {
                             port: 465,
                             secure: true,
                             auth: {
-                                user: 'longquangdeptrai@gmail.com',
+                                user: 'booking.hotel.com.2020@gmail.com',
                                 pass: '123456a@A'
                             }
                         });
                         let mailOptions = {
-                            from: 'Ban quản trị website BookingHotel <longquangdeptrai@gmail.com>', // sender address
+                            from: 'Ban quản trị website BookingHotel <booking.hotel.com.2020@gmail.com>', // sender address
                             to: user.email, // list of receivers
                             subject: 'Chào mừng đến trang web BookingHotel', // Subject line
                             text: req.body.body, // plain text body
@@ -980,12 +980,12 @@ exports.activeMember = async (req, res) => {
                         port: 465,
                         secure: true,
                         auth: {
-                            user: 'longquangdeptrai@gmail.com',
+                            user: 'booking.hotel.com.2020@gmail.com',
                             pass: '123456a@A'
                         }
                     });
                     let mailOptions = {
-                        from: 'Ban quản trị website Booking <longquangdeptrai@gmail.com>', // sender address
+                        from: 'Ban quản trị website Booking <booking.hotel.com.2020@gmail.com>', // sender address
                         to: user.email, // list of receivers
                         subject: 'Chào mừng đến trang web Booking', // Subject line
                         text: req.body.body, // plain text body
