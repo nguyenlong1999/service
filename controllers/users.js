@@ -24,7 +24,7 @@ exports.updateUser = async (req, res) => {
         })
     }
     const id = mongoose.Types.ObjectId(req.body.user.id);
-    await Users.findOne({ _id: id }, function (err, user) {
+    await Users.findOne({_id: id}, function (err, user) {
         if (err || user === null) {
             console.log(user);
             return res.send({
@@ -74,7 +74,7 @@ exports.create =
             };
 
             const finalUser = new Users(user);
-            Users.findOne({ email: user.email }, function (err, users) {
+            Users.findOne({email: user.email}, function (err, users) {
                 if (users !== null) {
                     return res.send({
                         status: 422,
@@ -142,17 +142,17 @@ exports.create =
                                         })
                                     );
                                 }).catch(err => {
-                                    res.status(500).send({
-                                        message: err.message || 'Some error occurred while creating the gallery'
-                                    })
+                                res.status(500).send({
+                                    message: err.message || 'Some error occurred while creating the gallery'
                                 })
+                            })
                         }).catch(err => {
-                            console.log(err);
-                            res.send({
-                                'status': 404,
-                                'message': err.message || 'Some error occurred while finding summary'
-                            });
+                        console.log(err);
+                        res.send({
+                            'status': 404,
+                            'message': err.message || 'Some error occurred while finding summary'
                         });
+                    });
                 }
             });
         });
@@ -171,7 +171,7 @@ exports.createAdminAccount =
             };
 
             const finalUser = new Users(user);
-            Users.findOne({ email: user.email }, function (err, users) {
+            Users.findOne({email: user.email}, function (err, users) {
                 if (users !== null) {
                     return res.send({
                         status: 422,
@@ -239,17 +239,17 @@ exports.createAdminAccount =
                                         })
                                     );
                                 }).catch(err => {
-                                    res.status(500).send({
-                                        message: err.message || 'Some error occurred while creating the gallery'
-                                    })
+                                res.status(500).send({
+                                    message: err.message || 'Some error occurred while creating the gallery'
                                 })
+                            })
                         }).catch(err => {
-                            console.log(err);
-                            res.send({
-                                'status': 404,
-                                'message': err.message || 'Some error occurred while finding summary'
-                            });
+                        console.log(err);
+                        res.send({
+                            'status': 404,
+                            'message': err.message || 'Some error occurred while finding summary'
                         });
+                    });
                 }
             });
         });
@@ -261,7 +261,7 @@ exports.resetPassword =
                 password: req.body.user.password
             };
             console.log(user.email);
-            Users.findOne({ email: user.email }, function (err, users) {
+            Users.findOne({email: user.email}, function (err, users) {
                 if (users !== null) {
                     user.password = md5(user.password);
 
@@ -311,7 +311,7 @@ exports.resetPassword =
 
 exports.testEmail = (req, res) => {
     if (req.body.email !== undefined || req.body.email !== '') {
-        Users.findOne({ email: req.body.email }, function (err, userSchema) {
+        Users.findOne({email: req.body.email}, function (err, userSchema) {
             if (err) {
                 return res.send({
                     status: 401,
@@ -345,7 +345,7 @@ exports.changePassword = (req, res) => {
         password: req.body.user.oldPassword,
         newPassword: req.body.user.password,
     };
-    Users.findOne({ email: user.email }, function (err, userSchema) {
+    Users.findOne({email: user.email}, function (err, userSchema) {
         if (err) {
             return res.send({
                 status: 401,
@@ -420,7 +420,7 @@ exports.login =
                 });
             }
 
-            Users.findOne({ email: user.email }, function (err, userSchema) {
+            Users.findOne({email: user.email}, function (err, userSchema) {
                 if (err) {
                     return res.send({
                         status: 401,
@@ -484,17 +484,17 @@ exports.login =
                                         image: userSchema.imageUrl
                                     });
                                 }).catch(err => {
-                                    res.status(500).send({
-                                        message: err.message || 'Some error occurred while creating the gallery'
-                                    })
+                                res.status(500).send({
+                                    message: err.message || 'Some error occurred while creating the gallery'
                                 })
-                        }).catch(err => {
-                            console.log(err);
-                            res.send({
-                                'status': 404,
-                                'message': err.message || 'Some error occurred while finding summary'
                             })
+                        }).catch(err => {
+                        console.log(err);
+                        res.send({
+                            'status': 404,
+                            'message': err.message || 'Some error occurred while finding summary'
                         })
+                    })
 
                 } else {
                     return res.send({
@@ -530,7 +530,7 @@ exports.loginAdmin =
                 });
             }
 
-            Users.findOne({ email: user.email }, function (err, userSchema) {
+            Users.findOne({email: user.email}, function (err, userSchema) {
                 if (err) {
                     return res.send({
                         status: 401,
@@ -594,17 +594,17 @@ exports.loginAdmin =
                                         image: userSchema.imageUrl
                                     });
                                 }).catch(err => {
-                                    res.status(500).send({
-                                        message: err.message || 'Some error occurred while creating the gallery'
-                                    })
+                                res.status(500).send({
+                                    message: err.message || 'Some error occurred while creating the gallery'
                                 })
-                        }).catch(err => {
-                            console.log(err);
-                            res.send({
-                                'status': 404,
-                                'message': err.message || 'Some error occurred while finding summary'
                             })
+                        }).catch(err => {
+                        console.log(err);
+                        res.send({
+                            'status': 404,
+                            'message': err.message || 'Some error occurred while finding summary'
                         })
+                    })
 
                 } else {
                     return res.send({
@@ -626,13 +626,13 @@ exports.logout =
                 res.redirect("/login");
             }
         });
-exports.addPoint = (req, res) => {
+exports.addPoint = (req) => {
     console.log("testet" + req.body.user.email);
 
 };
 exports.removePoint = (req, res) => {
     console.log("testet" + req.body.user.email);
-    Users.findOne({ email: req.body.user.email }, function (err, userSchema) {
+    Users.findOne({email: req.body.user.email}, function (err, userSchema) {
         if (err) {
             console.log(err);
             return res.send({
@@ -682,7 +682,24 @@ exports.getUsers = (async (req, res) => {
             })
         })
 });
-
+exports.getActiveUsers = (async (req, res) => {
+    await Users.find({
+        status: {
+            $gte: 0
+        },
+        role: {
+            $gte: 0
+        }
+    }).then(users => {
+        res.status(200).send(users
+        )
+    }).catch(err => {
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding users'
+        })
+    })
+});
 exports.getNewUsers = (async (req, res) => {
     Users.find({
         role: {
@@ -691,17 +708,17 @@ exports.getNewUsers = (async (req, res) => {
             $gte: -1
         }
     })
-        .sort({ createdAt: -1 })
+        .sort({createdAt: -1})
         .limit(10)
         .then(users => {
             res.status(200).send(users
             )
         }).catch(err => {
-            res.send({
-                'status': 404,
-                'message': err.message || 'Some error occurred while finding users'
-            })
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding users'
         })
+    })
 });
 
 exports.updateRole = async (req, res) => {
@@ -709,7 +726,7 @@ exports.updateRole = async (req, res) => {
     console.log('helo' + req.body.user.role);
     const mongoose = require('mongoose');
     const id = mongoose.Types.ObjectId(req.body.user.id);
-    await Users.findOne({ _id: id }, function (err, user) {
+    await Users.findOne({_id: id}, function (err, user) {
         if (err || user === null) {
             console.log(user);
             return res.send({
@@ -745,7 +762,7 @@ exports.updateReport = async (req, res) => {
     console.log('helo' + req.body.user.id);
     var mongoose = require('mongoose');
     var id = mongoose.Types.ObjectId(req.body.user.id);
-    await Users.findOne({ _id: id }, function (err, user) {
+    await Users.findOne({_id: id}, function (err, user) {
         if (err || user === null) {
             console.log(user);
             return res.send({
@@ -775,7 +792,7 @@ exports.bannedUser = async (req, res) => {
     console.log('helo' + req.body.user.id);
     var mongoose = require('mongoose');
     var id = mongoose.Types.ObjectId(req.body.user.id);
-    await Users.findOne({ _id: id }, function (err, user) {
+    await Users.findOne({_id: id}, function (err, user) {
         if (err || user === null) {
             console.log(user);
             return res.send({
@@ -837,7 +854,7 @@ exports.openUser = async (req, res) => {
     console.log('helo' + req.body.user.id);
     var mongoose = require('mongoose');
     var id = mongoose.Types.ObjectId(req.body.user.id);
-    await Users.findOne({ _id: id }, function (err, user) {
+    await Users.findOne({_id: id}, function (err, user) {
         if (err || user === null) {
             console.log(user);
             return res.send({
@@ -899,7 +916,7 @@ exports.activeMember = async (req, res) => {
     console.log('helo' + req.params.id);
     const mongoose = require('mongoose');
     const id = mongoose.Types.ObjectId(req.params.id);
-    await Users.findOne({ _id: id }, function (err, user) {
+    await Users.findOne({_id: id}, function (err, user) {
         if (err || user === null) {
             return res.send({
                 'status': 401,
@@ -954,7 +971,7 @@ exports.getMemberInfo = async (req, res) => {
     console.log(req.params.email);
     const mongoose = require('mongoose');
     const email = req.params.email;
-    await Users.findOne({ email: email }, function (err, user) {
+    await Users.findOne({email: email}, function (err, user) {
         if (err || user === null) {
             console.log(user);
             return res.send({
@@ -973,7 +990,7 @@ exports.getUserOnlineInfo = async (req, res) => {
     // console.log(req.body.user);
     let idUsers = req.body.user;
     console.log(idUsers.length);
-    let idObjects = new Array();
+    let idObjects = [];
     idUsers.forEach(id => {
         idObjects.push(mongoose.Types.ObjectId(id));
     });
@@ -1000,10 +1017,10 @@ exports.getUserOnlineInfo = async (req, res) => {
 };
 exports.getAllUserInfo = async (req, res) => {
     const userId = mongoose.Types.ObjectId(req.body.user._id);
-    let newUsers = new Array();
+    let newUsers = [];
     await Users.find({}).then(async users => {
         for (let user of users) {
-            if (user._id.toString() != req.body.user._id) {
+            if (user._id.toString() !== req.body.user._id) {
                 let id = mongoose.Types.ObjectId(user._id);
                 let chatMessResult = await this.getAllChatMess(id, userId, 0);
                 user.warningReport = chatMessResult.length;
@@ -1018,8 +1035,7 @@ exports.getAllUserInfo = async (req, res) => {
     });
 };
 exports.getAllChatMess = function (fromUser, toUser, news) {
-    var result = ChatMessages.find({ fromUser: fromUser, toUser: toUser, news: news });
-    return result;
+    return ChatMessages.find({fromUser: fromUser, toUser: toUser, news: news});
 }
 exports.getTopUsers = (async (req, res) => {
     await Users.find({
@@ -1029,7 +1045,7 @@ exports.getTopUsers = (async (req, res) => {
             $gte: -1
         }
     })
-        .sort({ totalPoint: -1 })
+        .sort({totalPoint: -1})
         .limit(10)
         .then(users => {
             res.status(200).send(users

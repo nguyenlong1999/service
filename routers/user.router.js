@@ -81,6 +81,7 @@ module.exports = app => {
   app.post("/register", users.create);
   app.post("/createAdminAccount", users.createAdminAccount);
   app.get("/getUsers", VerifyRoleByToken, users.getUsers);
+  app.get("/getActiveUsers", VerifyRoleByToken, users.getActiveUsers);
   app.post("/login", users.login);
   app.post("/testEmail",/* VerifyToken, */ users.testEmail);
   app.post("/loginAdmin", users.loginAdmin);
