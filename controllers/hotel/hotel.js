@@ -313,10 +313,85 @@ exports.getHotelById = async (req, res) => {
     }
 };
 
-exports.approvalHotel = (req, res) => {
-    return;
-};
+exports.updateStatusHotel = async (req, res) => {
+    var idUser = mongoose.Types.ObjectId(req.body.hotel.idUser);
+    var idHotel = mongoose.Types.ObjectId(req.body.hotel.idHotel);
+    var actionName = req.body.hotel.actionName;
+    console.log(req.body.hotel);
+    await Hotels.findOne({ _id: idHotel }, function (err, hotel) {
+        if (err || hotel === null) {
+            console.log(hotel);
+            return res.send({
+                status: 401,
+                message: 'Không thể tìm thấy khách sạn!'
+            });
+        } else {
+            Users.findOne({ _id: idUser }, function (err, user) {
+                if (err || user === null) {
+                    return res.send({
+                        status: 401,
+                        message: 'Không thể tìm thấy tài khoản của bạn!'
+                    });
+                } else if (user.role <= 1) {
+                    return res.send({
+                        status: 401,
+                        message: "Bạn không phải quản trị, không có quyền duyệt khách sạn!"
+                    });
+                } else {
+                    if (actionName === 'Duyệt') {
+                        hotel.status = 1;
+                    } else if (actionName === 'Bỏ duyệt') {
+                        hotel.status = 0;
+                    } else if (actionName === 'Khóa') {
+                        hotel.isBlock = 0;
+                        hotel.status = -2;
+                    } else if (actionName === 'Mở khóa') {
+                        hotel.isBlock = 1;
+                        hotel.status = 1;
+                    }
+                    hotel.save((function (err) {
+                        if (err) {
+                            return res.send({
+                                status: 401,
+                                message: actionName + ' khách sạn không thành công!'
+                            });
+                        }
+                        else {
+                            // let transporter = nodeMailer.createTransport({
+                            //     host: 'smtp.gmail.com',
+                            //     port: 465,
+                            //     secure: true,
+                            //     auth: {
+                            //         user: 'amthuc.anchay.2020@gmail.com',
+                            //         pass: 'Colenvuoi1@'
+                            //     }
+                            // });
+                            // let mailOptions = {
+                            //     from: 'Ban quản trị website BookingHotel <amthuc.anchay.2020@gmail.com>', // sender address
+                            //     to: user.email, // list of receivers
+                            //     subject: 'Chào mừng đến trang web BookingHotel', // Subject line
+                            //     text: req.body.body, // plain text body
+                            //     html: 'Xin chúc mừng! Tài khoản của bạn đã được mở. Vui lòng đăng nhập trang chủ website BookingHotel' +
+                            //         ': https://amthuc-anchay-poly.herokuapp.com/'
+                            //     // html body
+                            // };
 
-exports.blockHotel = (req, res) => {
-    return;
-}
+                            // transporter.sendMail(mailOptions, (error, info) => {
+                            //     if (error) {
+                            //         return console.log(error);
+                            //     }
+                            //     console.log('Message %s sent: %s', info.messageId, info.response);
+                            // });
+                            return res.send({
+                                status: 200,
+                                hotel: hotel,
+                                actionName: actionName,
+                                message: actionName + ' khách sạn thành công'
+                            });
+                        }
+                    }));
+                }
+            });
+        }
+    });
+};

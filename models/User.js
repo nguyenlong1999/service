@@ -6,14 +6,15 @@ var config = require('../config'); // get our config file
 const { Schema } = mongoose;
 
 const UsersSchema = new Schema({
-    email: String,
-    name: String,
-    lastName: String,
-    birthday: Number,
-    materialStatus: String,
-    phone: String,
-    signature: String,
-    introduction: String,
+    email: { type: String, default: '' },
+    name: { type: String, default: '' },
+    lastName: { type: String, default: '' },
+    birthday: { type: Number },
+    materialStatus: { type: String, default: '' },
+    phone: { type: String, default: '' },
+    signature: { type: String, default: '' },
+    introduction: { type: String, default: '' },
+    address: { type: String, default: '' },
     gender: { type: Number, default: 1 },
     imageUrl: { type: String, default: 'default-avatar.png' },
     hash: String,

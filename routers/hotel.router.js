@@ -6,6 +6,6 @@ module.exports = app => {
     app.post("/createHotel", hotel.createHotel);
     app.get('/getHotels', hotel.getHotel);
     app.get('/getHotel/:id', hotel.getHotelById);
-    app.post("/updateHotel", hotel.updateHotel);
+    app.post("/updateStatusHotel", hotel.updateStatusHotel);
 
 };

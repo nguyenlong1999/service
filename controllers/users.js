@@ -36,6 +36,7 @@ exports.updateUser = async (req, res) => {
             user.updateAccount = req.email;
             user.name = req.body.user.name;
             user.phone = req.body.user.phone;
+            user.address = req.body.user.address;
             user.lastName = req.body.user.lastName;
             user.birthday = req.body.user.birthday;
             user.gender = req.body.user.gender;
