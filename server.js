@@ -255,8 +255,8 @@ var fs = require('fs');
 
 app.get('/api/images/:imgName', function (req, res) {
     let imgName = req.params.imgName;
-    //const file = `${__dirname}/uploads/`+imgName; 
-    //res.download(file); 
+    //const file = `${__dirname}/uploads/`+imgName;
+    //res.download(file);
     var file = `${__dirname}/uploads/` + imgName;
 
     var filename = path.basename(file);
