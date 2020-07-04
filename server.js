@@ -344,10 +344,13 @@ io.sockets.on('connection', function (socket) {
     });
     socket.on('get-list-online', (message) => {
         let ObjectId = message.objectId;
+        if(message.message==='remove user'){
+            listUserOnline[ObjectId]='';
+        }
         let sendMessage = { 'get-list-online': listUserOnline };
         let id = listUserOnline[ObjectId];
         console.log(' id nè1   ' + id)
-        console.log(' user nè1 ' + sendMessage)
+        console.log(' user nè1 ' + listUserOnline)
         // listUserOnline[message]=socket;
         socket.broadcast.emit('message', sendMessage);
     });
