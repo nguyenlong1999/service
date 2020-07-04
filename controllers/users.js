@@ -969,10 +969,8 @@ exports.activeMember = async (req, res) => {
     });
 };
 exports.getMemberInfo = async (req, res) => {
-    console.log(req.params.email);
-    const mongoose = require('mongoose');
-    const email = req.params.email;
-    await Users.findOne({email: email}, function (err, user) {
+    const id = mongoose.Types.ObjectId(req.params.id);
+    await Users.findOne({_id: id}, function (err, user) {
         if (err || user === null) {
             console.log(user);
             return res.send({
