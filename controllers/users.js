@@ -460,7 +460,7 @@ exports.login =
                         email: userSchema.email
                     });
                     if (userSchema.imageUrl === undefined) {
-                        userSchema.imageUrl = './uploads/default-avatar.png';
+                        userSchema.imageUrl = 'assets/img/new_logo.png';
                     }
                     role = userSchema.role;
                     if (role === 0) {
