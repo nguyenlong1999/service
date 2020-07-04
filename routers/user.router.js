@@ -77,35 +77,35 @@ var VerifyUserByToken = require(__root + 'auth/VerifyUserByToken');
 var VerifyToken = require(__root + 'auth/VerifyToken');
 var VerifyRoleByToken = require(__root + 'auth/VerifyRoleByToken');
 module.exports = app => {
-  const users = require("../controllers/users");
-  app.post("/register", users.create);
-  app.post("/createAdminAccount", users.createAdminAccount);
-  app.get("/getUsers", VerifyRoleByToken, users.getUsers);
-  app.get("/getActiveUsers", VerifyRoleByToken, users.getActiveUsers);
-  app.post("/login", users.login);
-  app.post("/testEmail",/* VerifyToken, */ users.testEmail);
-  app.post("/loginAdmin", users.loginAdmin);
-  // app.post("/addPoint", VerifyToken,users.addPoint);
-  // app.post("/removePoint",VerifyToken, users.removePoint);
-  app.post("/updateRole",/* VerifyRoleByToken, */ users.updateRole);
-  app.post("/updateReport",/* VerifyRoleByToken, */ users.updateReport);
-  app.post("/openUser",/* VerifyRoleByToken, */ users.openUser);
-  app.post("/bannedUser",/* VerifyRoleByToken, */ users.bannedUser);
-  app.post("/updateUser", VerifyUserByToken, users.updateUser);
-  app.post("/changePassword", VerifyUserByToken, users.changePassword);
-  app.post("/resetPassword", users.resetPassword);
-  app.get("/logout", users.logout);
-  app.get("/getTopUsers", users.getTopUsers);
-  app.get("/getNewUsers", users.getNewUsers);
-  app.get('/active/:id', users.activeMember);
-  app.post('/getUserOnlineInfo', users.getUserOnlineInfo);
-  app.post('/getAllUserInfo', users.getAllUserInfo);
-  app.get('/getMemerInfo/:id', users.getMemberInfo);
-  // uploads
-  // const base = 'http://localhost:8000/uploads'
-  // const multipart = require('connect-multiparty');
-  // const multipartMiddleware = multipart({ uploadDir: '../uploads' });
-  // app.post('/upload', multipartMiddleware, (req, res) => {
-  //   console.log(req.files);
-  // });
+    const users = require("../controllers/users");
+    app.post("/register", users.create);
+    app.post("/createAdminAccount", users.createAdminAccount);
+    app.get("/getUsers", VerifyRoleByToken, users.getUsers);
+    app.get("/getActiveUsers", VerifyRoleByToken, users.getActiveUsers);
+    app.post("/login", users.login);
+    app.post("/testEmail",/* VerifyToken, */ users.testEmail);
+    app.post("/loginAdmin", users.loginAdmin);
+    // app.post("/addPoint", VerifyToken,users.addPoint);
+    // app.post("/removePoint",VerifyToken, users.removePoint);
+    app.post("/updateRole",/* VerifyRoleByToken, */ users.updateRole);
+    app.post("/updateReport",/* VerifyRoleByToken, */ users.updateReport);
+    app.post("/openUser",/* VerifyRoleByToken, */ users.openUser);
+    app.post("/bannedUser",/* VerifyRoleByToken, */ users.bannedUser);
+    app.post("/updateUser", VerifyUserByToken, users.updateUser);
+    app.post("/changePassword", VerifyUserByToken, users.changePassword);
+    app.post("/resetPassword", users.resetPassword);
+    app.get("/logout", users.logout);
+    app.get("/getTopUsers", users.getTopUsers);
+    app.get("/getNewUsers", users.getNewUsers);
+    app.get('/active/:id', users.activeMember);
+    app.post('/getUserOnlineInfo', users.getUserOnlineInfo);
+    app.post('/getAllUserInfo', users.getAllUserInfo);
+    app.get('/getMemerInfo/:id', users.getMemberInfo);
+    // uploads
+    // const base = 'http://localhost:8000/uploads'
+    // const multipart = require('connect-multiparty');
+    // const multipartMiddleware = multipart({ uploadDir: '../uploads' });
+    // app.post('/upload', multipartMiddleware, (req, res) => {
+    //   console.log(req.files);
+    // });
 };

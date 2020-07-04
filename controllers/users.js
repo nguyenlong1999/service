@@ -66,6 +66,7 @@ exports.updateUser = async (req, res) => {
 exports.create =
     (auth.optional,
         (req, res) => {
+            console.log(req);
             const user = {
                 email: req.body.user.email,
                 password: req.body.user.password,
@@ -73,8 +74,11 @@ exports.create =
                 totalPoint: 0,
                 imageUrl: req.body.user.imageUrl
             };
-
+            const isHotelUser = req.body.user.isUserHotel
             const finalUser = new Users(user);
+            if (isHotelUser) {
+                finalUser.role = 1
+            }
             Users.findOne({email: user.email}, function (err, users) {
                 if (users !== null) {
                     return res.send({
@@ -111,6 +115,7 @@ exports.create =
                             pass: '123456a@A'
                         }
                     });
+
                     let mailOptions = {
                         from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
                         to: user.email, // list of receivers
@@ -122,12 +127,37 @@ exports.create =
                         // html body
                     };
 
-                    transporter.sendMail(mailOptions, (error, info) => {
-                        if (error) {
-                            return console.log(error);
-                        }
-                        console.log('Message %s sent: %s', info.messageId, info.response);
-                    });
+                    let mailOptionsHotels = {
+                        from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
+                        to: user.email, // list of receivers
+                        subject: 'Chào mừng đến trang web booking', // Subject line
+                        text: req.body.body, // plain text body
+                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản hotels trên trang booking.com ' +
+                            '<br> Bạn vui lòng trả lời lại tin nhắn với cú pháp:'
+                            + '<br> Tên:'
+                            + '<br> Địa chỉ:'
+                            + '<br> Số điện thoại:'
+                            + '<br> Hoặc liên hệ số điện thoại: 0123456789'
+                            + '<br> Quản trị viên sẽ liên hệ với bạn để hoàn thành đăng kí tài khoản hotel.'
+                            + '<br> Xin chân thành cảm ơn quý đối tác.'
+                        // html body
+                    };
+
+                    if (finalUser) {
+                        transporter.sendMail(mailOptionsHotels, (error, info) => {
+                            if (error) {
+                                return console.log(error);
+                            }
+                            console.log('Message %s sent: %s', info.messageId, info.response);
+                        });
+                    } else {
+                        transporter.sendMail(mailOptions, (error, info) => {
+                            if (error) {
+                                return console.log(error);
+                            }
+                            console.log('Message %s sent: %s', info.messageId, info.response);
+                        });
+                    }
                     Summarys.find()
                         .then(summary => {
                             let sum = summary[0];
@@ -148,7 +178,6 @@ exports.create =
                                 })
                             })
                         }).catch(err => {
-                        console.log(err);
                         res.send({
                             'status': 404,
                             'message': err.message || 'Some error occurred while finding summary'
@@ -802,7 +831,7 @@ exports.bannedUser = async (req, res) => {
             })
         } else {
             console.log(user);
-            user.status = -2;
+            user.status = 0;
             if (user.role > 1) {
                 return res.send({
                     status: 401,
@@ -825,22 +854,43 @@ exports.bannedUser = async (req, res) => {
                                 pass: '123456a@A'
                             }
                         });
+
                         let mailOptions = {
                             from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
                             to: user.email, // list of receivers
                             subject: 'Chào mừng đến trang web Booking', // Subject line
                             text: req.body.body, // plain text body
-                            html: 'Tài khoản của bạn đã bị khóa vì vi pham quy định của diễn đàn, pháp luật của nhà nước.' +
+                            html: 'Tài khoản của bạn đã bị khóa vì vi pham quy định của website, pháp luật của nhà nước.' +
                                 'Vui lòng liên hệ lại với email: longdeptrai@gmaillcom'
                             // html body
                         };
 
-                        transporter.sendMail(mailOptions, (error, info) => {
-                            if (error) {
-                                return console.log(error);
-                            }
-                            console.log('Message %s sent: %s', info.messageId, info.response);
-                        });
+                        let mailOptionsIsHotel = {
+                            from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
+                            to: user.email, // list of receivers
+                            subject: 'Chào mừng đến trang web Booking', // Subject line
+                            text: req.body.body, // plain text body
+                            html: 'Tài khoản của bạn đã bị khóa vì khách sạn vi pham quy định của website.' +
+                                'Vui lòng liên hệ lại với email: longdeptrai@gmaillcom'
+                            // html body
+                        };
+
+                        if (user.role == 1) {
+                            transporter.sendMail(mailOptionsIsHotel, (error, info) => {
+                                if (error) {
+                                    return console.log(error);
+                                }
+                                console.log('Message %s sent: %s', info.messageId, info.response);
+                            });
+                        } else {
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                if (error) {
+                                    return console.log(error);
+                                }
+                                console.log('Message %s sent: %s', info.messageId, info.response);
+                            });
+                        }
+
                         return res.status(200).send({
                             status: 200,
                             user: user
@@ -893,16 +943,35 @@ exports.openUser = async (req, res) => {
                             subject: 'Chào mừng đến trang web BookingHotel', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Xin chúc mừng! Tài khoản của bạn đã được mở. Vui lòng đăng nhập trang chủ website BookingHotel' +
-                                ': https://google.com/'
+                                ': localhost:4200/index'
                             // html body
                         };
 
-                        transporter.sendMail(mailOptions, (error, info) => {
-                            if (error) {
-                                return console.log(error);
-                            }
-                            console.log('Message %s sent: %s', info.messageId, info.response);
-                        });
+                        let mailOptionsIsHotels = {
+                            from: 'Ban quản trị website BookingHotel <booking.hotel.com.2020@gmail.com>', // sender address
+                            to: user.email, // list of receivers
+                            subject: 'Chào mừng đến trang web booking.hotel.com.2020', // Subject line
+                            text: req.body.body, // plain text body
+                            html: 'Xin chúc mừng! Tài khoản hotels của bạn đã được mở. Vui lòng đăng nhập website:' +
+                                ': localhost:4200/login'
+                                + '<br> để quản lý khách sạn của bạn.'
+                            // html body
+                        };
+                        if (user.role == 1) {
+                            transporter.sendMail(mailOptionsIsHotels, (error, info) => {
+                                if (error) {
+                                    return console.log(error);
+                                }
+                                console.log('Message %s sent: %s', info.messageId, info.response);
+                            });
+                        } else {
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                if (error) {
+                                    return console.log(error);
+                                }
+                                console.log('Message %s sent: %s', info.messageId, info.response);
+                            });
+                        }
                         return res.status(200).send({
                             status: 200,
                             user: user
