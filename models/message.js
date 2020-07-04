@@ -5,7 +5,7 @@ const MessageSchema = mongoose.Schema({
     imageUrl: {type: String, default: ''},
     videoUrl: {type: String, default: ''},
     news: {type: Number, default: 0},
-    description:{type:String,default:'Tính lượt thực hiện công thức'}
+    description:{type:String,default:'Ting ting!'}
 }, {
     timestamps: true
 });

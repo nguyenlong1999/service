@@ -7,4 +7,6 @@ module.exports = app => {
   // app.post("/deleteMessage",VerifyToken, messages.deleteMessage);
   app.get("/getMessages", messages.getMessages);
   app.post("/findMessage", messages.findMessage);
+  app.post("/createMessage", messages.createMessage);
+  app.post("/updateNews", messages.updateNews);
 };
