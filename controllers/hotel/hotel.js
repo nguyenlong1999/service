@@ -6,6 +6,7 @@ const Users = mongoose.model("Users");
 const Hotels = mongoose.model("Hotels")
 const RoomDetails = mongoose.model("RoomDetails");
 const Facilities = mongoose.model("Facilities");
+const Messages = mongoose.model("Messages");
 const ReservationTimes = mongoose.model("ReservationTimes");
 const CancelRooms = mongoose.model("CancelRooms");
 // const Hotels = require("../models/hotel");
@@ -358,24 +359,70 @@ exports.updateStatusHotel = async (req, res) => {
                         message: "Bạn không phải quản trị, không có quyền duyệt khách sạn!"
                     });
                 } else {
+                    let message = new Messages({
+                        user: hotel.user.email,
+                        content: '',
+                        imageUrl: '',
+                        videoUrl: '',
+                        news: 0
+                    });
+                    let messageAdmin = new Messages({
+                        user: user.email,
+                        content: '',
+                        imageUrl: '',
+                        videoUrl: '',
+                        news: 0
+                    });
                     if (actionName === 'Duyệt') {
                         hotel.status = 1;
+                        message.content = 'Chúc mừng bạn đã được hệ thống duyệt khách sạn ' + hotel.name;
+                        messageAdmin.content = 'Bạn đã duyệt thành công khách sạn ' + hotel.name + ' của thành viên ' + hotel.user.email;
                     } else if (actionName === 'Bỏ duyệt') {
                         hotel.status = 0;
+                        message.content = 'Khác sạn ' + hotel.name + ' của bạn đã bị hệ thống cho ngừng hoạt động!';
+                        messageAdmin.content = 'Bạn đã bỏ duyệt thành công khách sạn ' + hotel.name + ' của thành viên ' + hotel.user.email;
                     } else if (actionName === 'Khóa') {
                         hotel.isBlock = 0;
                         hotel.status = -2;
+                        message.content = 'Khách sạn ' + hotel.name + ' của bạn đã bị hệ thống khóa!';
+                        messageAdmin.content = 'Bạn đã khóa thành công khách sạn ' + hotel.name + ' của thành viên ' + hotel.user.email;
                     } else if (actionName === 'Mở khóa') {
                         hotel.isBlock = 1;
                         hotel.status = 1;
+                        message.content = 'Chúc mừng bạn đã được mở khóa khách sạn ' + hotel.name;
+                        messageAdmin.content = 'Bạn đã được hệ thống mở khóa thành công khách sạn ' + hotel.name + ' của thành viên ' + hotel.user.email;
                     }
+                    console.log(message);
                     hotel.save((function (err) {
                         if (err) {
                             return res.send({
                                 status: 401,
                                 message: actionName + ' khách sạn không thành công!'
                             });
-                        } else {
+                        }
+                        else {
+                            message.save().then(newMessage => {
+                                messageAdmin.save().then(newMessageAdmin => {
+                                    return res.send({
+                                        status: 200,
+                                        hotel: hotel,
+                                        message: newMessage,
+                                        messageAdmin: newMessageAdmin,
+                                    });
+                                }).catch(err => {
+                                    console.log('false to save messageAdmin');
+                                    return res.send({
+                                        status: 404,
+                                        message: err.message || 'Some error occurred while save messageAdmin'
+                                    });
+                                });
+                            }).catch(err => {
+                                console.log('false to save message');
+                                return res.send({
+                                    status: 404,
+                                    message: err.message || 'Some error occurred while save message'
+                                });
+                            });
                             // let transporter = nodeMailer.createTransport({
                             //     host: 'smtp.gmail.com',
                             //     port: 465,
@@ -401,12 +448,6 @@ exports.updateStatusHotel = async (req, res) => {
                             //     }
                             //     console.log('Message %s sent: %s', info.messageId, info.response);
                             // });
-                            return res.send({
-                                status: 200,
-                                hotel: hotel,
-                                actionName: actionName,
-                                message: actionName + ' khách sạn thành công'
-                            });
                         }
                     }));
                 }

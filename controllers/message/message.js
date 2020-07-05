@@ -17,7 +17,7 @@ exports.getMessages = (async (req, res) => {
 });
 
 exports.findMessage = async (req, res) => {
-    await Messages.find({user: req.body.user.email}, function (err, messages) {
+    await Messages.find({ user: req.body.user.email }, function (err, messages) {
         if (err) {
             console.log(err);
             return res.send({
@@ -26,7 +26,7 @@ exports.findMessage = async (req, res) => {
             })
         } else {
             for (let mess of messages) {
-                mess.news++;
+                // mess.news++;
                 mess.save().then(() => {
                 });
             }
@@ -36,15 +36,30 @@ exports.findMessage = async (req, res) => {
         }
     }).sort({
         createdAt: -1
-    })
-        .limit(10)
+    }).limit(15)
 };
+exports.updateNews = async (req, res) => {
+    const news = 1;
+    await Messages.updateMany(
+        { user: req.body.user.email },
+        { $set: { "news": news } }
+    ).then(messages => {
+        return res.send({
+            status: 200,
+            message: messages
+        });
+    }).catch(err => {
+        res.status(500).send({
+            message: err.message || 'Some error occurred while update the note'
+        });
+    });
+}
 exports.createMessage = (req, res) => {
     const message = new Messages({
         user: req.body.message.user,
         content: req.body.message.content
     });
-    Users.findOne({email: req.body.message.user}, function (err, userSchema) {
+    Users.findOne({ email: req.body.message.user }, function (err, userSchema) {
         if (err) {
             return res.send({
                 status: 401,
@@ -52,7 +67,29 @@ exports.createMessage = (req, res) => {
             });
         }
         if (userSchema) {
-            message.user = userSchema
+            message.user = userSchema;
+            message.save().then(() => {
+                Messages.find({ user: req.body.message.user }, function (err, messages) {
+                    if (err) {
+                        return res.send({
+                            status: 401,
+                            message: err
+                        });
+                    }
+                    if (messages) {
+                        return res.send({
+                            newMessage: message,
+                            messages: messages,
+                            status: 200,
+                            message: "Thêm thông báo thành công"
+                        });
+                    }
+                });
+            }).catch(err => {
+                res.status(500).send({
+                    message: err.message || 'Some error occurred while creating the note'
+                });
+            });
         } else {
             return res.send({
                 status: 403,
@@ -60,32 +97,20 @@ exports.createMessage = (req, res) => {
             });
         }
     });
-    message.save()
-        .then(() => {
-            return res.send({
-                result: message,
-                status: 200,
-                message: "Thêm điểm thành công"
-            });
-        }).catch(err => {
-        res.status(500).send({
-            message: err.message || 'Some error occurred while creating the note'
-        });
-    });
 };
 exports.deleteMessage = (auth.optional,
     (req, res) => {
         const message = new Messages({
             user: req.body.message.user.email
         });
-        Messages.find({user: message.user})
+        Messages.find({ user: message.user })
             .then((messages) => {
                 if (!messages) {
                     return res.status(400).send({
                         message: "can not found current user"
                     });
                 }
-                Messages.deleteOne({_id: messageed._id}, function (err, result) {
+                Messages.deleteOne({ _id: messageed._id }, function (err, result) {
                     if (err) {
                         console.log(err);
                         return res.send({
