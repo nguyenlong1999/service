@@ -81,7 +81,7 @@ exports.createHotel = (req, res) => {
     });
     let roomDetailsRes = [];
 
-    Users.findOne({ email: req.body.hotel.email }, function (err, userSchema) {
+    Users.findOne({email: req.body.hotel.email}, function (err, userSchema) {
         if (err) {
             return res.send({
                 status: 401,
@@ -123,6 +123,7 @@ exports.createHotel = (req, res) => {
                     hotel: hotel,
                     faciliti: faciliti,
                     roomDetails: roomDetailsRes,
+                    status: 200,
                     message: 'Create hotel successfuly'
                 })
             }).catch(err => {
@@ -137,7 +138,7 @@ exports.createHotel = (req, res) => {
 exports.updateHotel = (req, res) => {
     let id = mongoose.Types.ObjectId(req.body.hotel.id);
     let roomDetailsRes = [];
-    Hotels.findOne({ _id: id }, function (err, hotel) {
+    Hotels.findOne({_id: id}, function (err, hotel) {
         if (err) {
             return res.send({
                 status: 401,
@@ -168,7 +169,7 @@ exports.updateHotel = (req, res) => {
         hotel.zip = req.body.hotel.zip;
         hotel.status = req.body.hotel.status
         hotel.save().then(hotelUpdate => {
-            Facilities.findOne({ "hotelObj._id": id }, function (err, facilitie) {
+            Facilities.findOne({"hotelObj._id": id}, function (err, facilitie) {
                 if (err) {
                     return res.send({
                         status: 401,
@@ -216,7 +217,7 @@ exports.updateHotel = (req, res) => {
                 facilitie.wirelessBell = req.body.hotel.facilities.wirelessBell;
                 facilitie.workspace = req.body.hotel.facilities.workspace;
                 facilitie.save().then(facilitiUpdate => {
-                    RoomDetails.deleteMany({ "hotelObj._id": id }, function (err, success) {
+                    RoomDetails.deleteMany({"hotelObj._id": id}, function (err, success) {
                         if (err) {
                             return res.send({
                                 status: 401,
@@ -249,6 +250,7 @@ exports.updateHotel = (req, res) => {
                                 hotel: hotelUpdate,
                                 faciliti: facilitiUpdate,
                                 roomDetails: roomDetailsRes,
+                                status: 200,
                                 message: 'Update hotel successfuly'
                             })
                         }
@@ -269,6 +271,24 @@ exports.updateHotel = (req, res) => {
 
 exports.getHotel = (async (req, res) => {
     await Hotels.find().then(hotel => {
+        res.status(200).send(hotel)
+    }).catch(err => {
+        console.log('not found hotel');
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding hotel'
+        })
+    })
+});
+
+
+exports.getHotelByUser = (async (req, res) => {
+
+    const UserObjId = mongoose.Types.ObjectId(req.params.id);
+
+    await Hotels.find({
+        "user._id": UserObjId
+    }).then(hotel => {
         res.status(200).send(hotel)
     }).catch(err => {
         console.log('not found hotel');
@@ -318,7 +338,7 @@ exports.updateStatusHotel = async (req, res) => {
     var idHotel = mongoose.Types.ObjectId(req.body.hotel.idHotel);
     var actionName = req.body.hotel.actionName;
     console.log(req.body.hotel);
-    await Hotels.findOne({ _id: idHotel }, function (err, hotel) {
+    await Hotels.findOne({_id: idHotel}, function (err, hotel) {
         if (err || hotel === null) {
             console.log(hotel);
             return res.send({
@@ -326,7 +346,7 @@ exports.updateStatusHotel = async (req, res) => {
                 message: 'Không thể tìm thấy khách sạn!'
             });
         } else {
-            Users.findOne({ _id: idUser }, function (err, user) {
+            Users.findOne({_id: idUser}, function (err, user) {
                 if (err || user === null) {
                     return res.send({
                         status: 401,
@@ -355,8 +375,7 @@ exports.updateStatusHotel = async (req, res) => {
                                 status: 401,
                                 message: actionName + ' khách sạn không thành công!'
                             });
-                        }
-                        else {
+                        } else {
                             // let transporter = nodeMailer.createTransport({
                             //     host: 'smtp.gmail.com',
                             //     port: 465,
