@@ -32,9 +32,11 @@ exports.findChatMessage = async (req, res) => {
         }).limit(50)
         .then(messages => {
                 for (let mess of messages) {
-                    mess.news++;
-                    mess.save().then(() => {
-                    });
+                    if(mess.news < 2){
+                        mess.news ++;
+                        mess.save().then(() => {
+                        });
+                    }
                 }
                 res.status(200).send({
                     message: messages
