@@ -766,11 +766,6 @@ exports.updateRole = async (req, res) => {
         } else {
             console.log(user);
             user.role = req.body.user.role;
-            // if (user.role === 0) {
-            //     user.warningReport = 0;
-            // } else {
-            //     user.warningReport = user.role;
-            // }
             user.save((function (err) {
                 if (err) {
                     return res.send({

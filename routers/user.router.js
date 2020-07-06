@@ -87,11 +87,11 @@ module.exports = app => {
     app.post("/loginAdmin", users.loginAdmin);
     // app.post("/addPoint", VerifyToken,users.addPoint);
     // app.post("/removePoint",VerifyToken, users.removePoint);
-    app.post("/updateRole",/* VerifyRoleByToken, */ users.updateRole);
+    app.post("/updateRole", VerifyRoleByToken,  users.updateRole);
     app.post("/updateReport",/* VerifyRoleByToken, */ users.updateReport);
-    app.post("/openUser",/* VerifyRoleByToken, */ users.openUser);
-    app.post("/bannedUser",/* VerifyRoleByToken, */ users.bannedUser);
-    app.post("/updateUser", VerifyUserByToken, users.updateUser);
+    app.post("/openUser", VerifyRoleByToken,  users.openUser);
+    app.post("/bannedUser", VerifyRoleByToken, users.bannedUser);
+    app.post("/updateUser", VerifyRoleByToken, users.updateUser);
     app.post("/changePassword", VerifyUserByToken, users.changePassword);
     app.post("/resetPassword", users.resetPassword);
     app.get("/logout", users.logout);
@@ -100,7 +100,7 @@ module.exports = app => {
     app.get('/active/:id', users.activeMember);
     app.post('/getUserOnlineInfo', users.getUserOnlineInfo);
     app.post('/getAllUserInfo', users.getAllUserInfo);
-    app.get('/getMemerInfo/:id', users.getMemberInfo);
+    app.get('/getMemerInfo/:id',VerifyUserByToken, users.getMemberInfo);
     // uploads
     // const base = 'http://localhost:8000/uploads'
     // const multipart = require('connect-multiparty');

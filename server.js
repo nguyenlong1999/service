@@ -342,6 +342,12 @@ io.sockets.on('connection', function (socket) {
         // listUserOnline[message]=socket;
         socket.broadcast.to(id).emit('message', sendMessage);
     });
+    socket.on('new-notification', (notification) => {
+        let ObjectId = notification.objectId;
+        let sendNotification = notification.message;
+        let id = listUserOnline[ObjectId];
+        socket.broadcast.to(id).emit('notification', sendNotification);
+    });
     socket.on('get-list-online', (message) => {
         let ObjectId = message.objectId;
         if(message.message==='remove user'){

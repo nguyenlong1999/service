@@ -1,13 +1,13 @@
 module.exports = app => {
     const hotel = require("../controllers/hotel/hotel");
     // var VerifyToken = require(__root + 'auth/VerifyToken');
-    // var VerifyUserByToken = require(__root + 'auth/VerifyUserByToken');
-
-    app.post("/createHotel", hotel.createHotel);
-    app.get('/getHotels', hotel.getHotel);
-    app.get('/getHotelsByUser/:id', hotel.getHotelByUser);
-    app.get('/getHotel/:id', hotel.getHotelById);
-    app.post("/updateStatusHotel", hotel.updateStatusHotel);
-    app.post("/updateHotel", hotel.updateHotel);
+    var VerifyRoleByToken = require(__root + 'auth/VerifyRoleByToken');
+    var VerifyUserByToken = require(__root + 'auth/VerifyUserByToken');
+    app.post("/createHotel", VerifyUserByToken, hotel.createHotel);
+    app.get('/getHotels', VerifyRoleByToken, hotel.getHotel);
+    app.get('/getHotelsByUser/:id', VerifyUserByToken, hotel.getHotelByUser);
+    app.get('/getHotel/:id', VerifyUserByToken, hotel.getHotelById);
+    app.post("/updateStatusHotel", VerifyRoleByToken, hotel.updateStatusHotel);
+    app.post("/updateHotel", VerifyUserByToken, hotel.updateHotel);
 
 };
