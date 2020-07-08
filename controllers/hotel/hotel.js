@@ -81,7 +81,6 @@ exports.createHotel = (req, res) => {
         workspace: req.body.hotel.facilities.workspace,
     });
     let roomDetailsRes = [];
-
     Users.findOne({email: req.body.hotel.email}, function (err, userSchema) {
         if (err) {
             return res.send({
@@ -282,6 +281,18 @@ exports.getHotel = (async (req, res) => {
     })
 });
 
+exports.getHotelSearch = (async (req, res) => {
+    await Hotels.find().then(hotel => {
+        res.status(200).send(hotel)
+    }).catch(err => {
+        console.log('not found hotel');
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding hotel'
+        })
+    })
+});
+
 
 exports.getHotelByUser = (async (req, res) => {
 
@@ -371,7 +382,7 @@ exports.updateStatusHotel = async (req, res) => {
                         content: '',
                         imageUrl: '',
                         videoUrl: '',
-                        news: 0
+                        news: 1
                     });
                     if (actionName === 'Duyệt') {
                         hotel.status = 1;
