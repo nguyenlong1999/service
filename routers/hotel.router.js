@@ -5,6 +5,7 @@ module.exports = app => {
     var VerifyUserByToken = require(__root + 'auth/VerifyUserByToken');
     app.post("/createHotel", VerifyUserByToken, hotel.createHotel);
     app.get('/getHotels', VerifyRoleByToken, hotel.getHotel);
+    app.get('/getHotelSearch', VerifyRoleByToken, hotel.getHotelSearch);
     app.get('/getHotelsByUser/:id', VerifyUserByToken, hotel.getHotelByUser);
     app.get('/getHotel/:id', VerifyUserByToken, hotel.getHotelById);
     app.post("/updateStatusHotel", VerifyRoleByToken, hotel.updateStatusHotel);
