@@ -3,7 +3,7 @@ const HotelSchema = mongoose.Schema({
     user: { type: Object },
     name: { type: String, default: '' },
     address: { type: String, default: '' },
-    cancellationPolicy: { type: Number, default: 0 },
+    cancellationPolicy: { type: Number, default: 1 },
     country: { type: String, default: '' },
     guideToHotel: { type: String, default: '' },
     reservationTime: { type: Number, default: 0 },
@@ -18,6 +18,7 @@ const HotelSchema = mongoose.Schema({
     zip: { type: String, default: '' },
     status: { type: Number, default: 0 },
     isBlock: { type: Number, default: 1 },
+    nameSpace: { type: String, default: '' },
 
     // touristAttraction: {type: String, default: ''},
     // province: {type: String, default: ''},

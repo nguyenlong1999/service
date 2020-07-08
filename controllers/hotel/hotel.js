@@ -95,8 +95,6 @@ exports.createHotel = (req, res) => {
         } else {
             hotel.user = userSchema;
             hotel.save().then(() => {
-                faciliti.hotelObj = hotel;
-                faciliti.save()
                 req.body.hotel.formArrayRoomNumber.forEach(item => {
                     let bedRoomDetails = [];
                     item.bedRoomsDetails.forEach(item => {
@@ -108,7 +106,29 @@ exports.createHotel = (req, res) => {
                         bedRooms: item.bedRooms,
                         maxDay: item.maxDay,
                         price: item.price,
-                        bedroomDetail: bedRoomDetails
+                        bedroomDetail: bedRoomDetails,
+                        roomAirConditional: item.roomAirConditional,
+                        roomHairdryer: item.roomHairdryer,
+                        roomIroningMachine: item.roomIroningMachine,
+                        roomTelevison: item.roomTelevison,
+                        roomCableTV: item.roomCableTV,
+                        roomFreeWifi: item.roomFreeWifi,
+                        roomTea: item.roomTea,
+                        roomCoffee: item.roomCoffee,
+                        roomShampoo: item.roomShampoo,
+                        roomBeddingSet: item.roomBeddingSet,
+                        roomTowelsOfAllKinds: item.roomTowelsOfAllKinds,
+                        roomWardrobe: item.roomWardrobe,
+                        roomPrivatePool: item.roomPrivatePool,
+                        roomHeaters: item.roomHeaters,
+                        roomDryer: item.roomDryer,
+                        roomTeaMaker: item.roomTeaMaker,
+                        roomSmartKey: item.roomSmartKey,
+                        roomFreeBreakfast: item.roomFreeBreakfast,
+                        roomWorkspace: item.roomWorkspace,
+                        roomFireplace: item.roomFireplace,
+                        roomHotTub: item.roomHotTub,
+                        roomType: item.roomType
                     });
 
                     roomDetails.hotelObj = hotel;
@@ -119,13 +139,37 @@ exports.createHotel = (req, res) => {
                     });
                     roomDetailsRes.push(roomDetails)
                 });
-                res.status(200).send({
-                    hotel: hotel,
-                    faciliti: faciliti,
-                    roomDetails: roomDetailsRes,
-                    status: 200,
-                    message: 'Create hotel successfuly'
-                })
+                faciliti.hotelObj = hotel;
+                faciliti.save().then(facilitiSchema => {
+                    Summarys.find()
+                        .then(summary => {
+                            let sum = summary[0];
+                            console.log(sum);
+                            sum.hotelCount++;
+                            sum.save()
+                                .then(() => {
+                                    res.status(200).send({
+                                        hotel: hotel,
+                                        faciliti: faciliti,
+                                        roomDetails: roomDetailsRes,
+                                        summary: summary,
+                                        status: 200,
+                                        message: 'Create hotel successfuly'
+                                    })
+                                }).catch(err => {
+                                res.send({
+                                    status:200,
+                                    message: 'Lỗi khi tổng kết số khách sạn của trang web'
+                                });
+                            });
+                        }).catch(err => {
+                        console.log(err);
+                        res.send({
+                            'status': 404,
+                            message: 'Lỗi khi tổng kết số khách sạn của trang web'
+                        });
+                    });
+                });
             }).catch(err => {
                 res.status(500).send({
                     message: err.message || 'Some error occurred while creating the hotel'
@@ -236,7 +280,29 @@ exports.updateHotel = (req, res) => {
                                     bedRooms: item.bedRooms,
                                     maxDay: item.maxDay,
                                     price: item.price,
-                                    bedroomDetail: bedRoomDetails
+                                    bedroomDetail: bedRoomDetails,
+                                    roomAirConditional: item.roomAirConditional,
+                                    roomHairdryer: item.roomHairdryer,
+                                    roomIroningMachine: item.roomIroningMachine,
+                                    roomTelevison: item.roomTelevison,
+                                    roomCableTV: item.roomCableTV,
+                                    roomFreeWifi: item.roomFreeWifi,
+                                    roomTea: item.roomTea,
+                                    roomCoffee: item.roomCoffee,
+                                    roomShampoo: item.roomShampoo,
+                                    roomBeddingSet: item.roomBeddingSet,
+                                    roomTowelsOfAllKinds: item.roomTowelsOfAllKinds,
+                                    roomWardrobe: item.roomWardrobe,
+                                    roomPrivatePool: item.roomPrivatePool,
+                                    roomHeaters: item.roomHeaters,
+                                    roomDryer: item.roomDryer,
+                                    roomTeaMaker: item.roomTeaMaker,
+                                    roomSmartKey: item.roomSmartKey,
+                                    roomFreeBreakfast: item.roomFreeBreakfast,
+                                    roomWorkspace: item.roomWorkspace,
+                                    roomFireplace: item.roomFireplace,
+                                    roomHotTub: item.roomHotTub,
+                                    roomType: item.roomType
                                 });
                                 roomDetails.hotelObj = hotel;
                                 roomDetails.save().catch(err => {
@@ -410,8 +476,7 @@ exports.updateStatusHotel = async (req, res) => {
                                 status: 401,
                                 message: actionName + ' khách sạn không thành công!'
                             });
-                        }
-                        else {
+                        } else {
                             message.save().then(newMessage => {
                                 messageAdmin.save().then(newMessageAdmin => {
                                     return res.send({
