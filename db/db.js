@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 const dbConfig = require('../db/database.config');
 
  mongoose.connect(dbConfig.url, {
-    useNewUrlParser: true
-    // useUnifiedTopology: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 }).then(() => {
     console.log('Successfully connected to the database')
 }).catch(err => {
