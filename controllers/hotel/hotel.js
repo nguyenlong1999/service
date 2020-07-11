@@ -24,6 +24,7 @@ exports.createHotel = (req, res) => {
         imageUrl: req.body.hotel.imageUrl,
         cancellationPolicy: req.body.hotel.cancellationPolicy,
         country: req.body.hotel.country,
+        province: req.body.hotel.province,
         reservationTime: req.body.hotel.reservationTime,
         image: req.body.hotel.image,
         rulerHotel: req.body.hotel.rulerHotel,
@@ -33,6 +34,9 @@ exports.createHotel = (req, res) => {
         totalRoomNumber: req.body.hotel.totalRoomNumber,
         desHotel: req.body.hotel.desHotel,
         zip: req.body.hotel.zip,
+        latitude: req.body.hotel.latitude,
+        longitude: req.body.hotel.longitude,
+        nameSpace: req.body.hotel.nameSpace,
         // touristAttraction: req.body.hotel.touristAttraction,
         // province: req.body.hotel.province,
         // city: req.body.hotel.city,
@@ -158,7 +162,7 @@ exports.createHotel = (req, res) => {
                                     })
                                 }).catch(err => {
                                 res.send({
-                                    status:200,
+                                    status: 200,
                                     message: 'Lỗi khi tổng kết số khách sạn của trang web'
                                 });
                             });
@@ -202,6 +206,7 @@ exports.updateHotel = (req, res) => {
         hotel.imageUrl = req.body.hotel.imageUrl;
         hotel.cancellationPolicy = req.body.hotel.cancellationPolicy;
         hotel.country = req.body.hotel.country;
+        hotel.province = req.body.hotel.province;
         hotel.reservationTime = req.body.hotel.reservationTime;
         hotel.image = req.body.hotel.image;
         hotel.rulerHotel = req.body.hotel.rulerHotel;
@@ -211,7 +216,10 @@ exports.updateHotel = (req, res) => {
         hotel.totalRoomNumber = req.body.hotel.totalRoomNumber;
         hotel.desHotel = req.body.hotel.desHotel;
         hotel.zip = req.body.hotel.zip;
-        hotel.status = req.body.hotel.status
+        hotel.status = req.body.hotel.status;
+        hotel.latitude = req.body.hotel.latitude;
+        hotel.longitude = req.body.hotel.longitude;
+        hotel.nameSpace = req.body.hotel.nameSpace;
         hotel.save().then(hotelUpdate => {
             Facilities.findOne({"hotelObj._id": id}, function (err, facilitie) {
                 if (err) {
@@ -378,14 +386,14 @@ exports.getHotelByUser = (async (req, res) => {
 });
 
 exports.getHotelById = async (req, res) => {
-    const hotelObjId = mongoose.Types.ObjectId(req.params.id);
+    const hotelObjId = req.params.id;
     let objectRes = []
 
-    let tienNghi = new Facilities;
+    let tienNghi = new Facilities; 
     let listRoomDetails = []
     try {
         await Facilities.find({
-            "hotelObj._id": hotelObjId
+            "hotelObj.nameSpace": hotelObjId
         }).then(
             facilities => {
                 // res.status(200).send(facilities)

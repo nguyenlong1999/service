@@ -19,9 +19,10 @@ const HotelSchema = mongoose.Schema({
     status: { type: Number, default: 0 },
     isBlock: { type: Number, default: 1 },
     nameSpace: { type: String, default: '' },
-
+    latitude: { type: String, default: '' },
+    longitude: { type: String, default: '' },
     // touristAttraction: {type: String, default: ''},
-    // province: {type: String, default: ''},
+    province: {type: String, default: ''},
     // city: {type: String, default: ''},
     // maxDay: {type: Number, default: ''},
 }, {
