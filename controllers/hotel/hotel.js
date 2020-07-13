@@ -110,6 +110,7 @@ exports.createHotel = (req, res) => {
                         bedRooms: item.bedRooms,
                         maxDay: item.maxDay,
                         price: item.price,
+                        lstImg: item.lstImg,
                         bedroomDetail: bedRoomDetails,
                         roomAirConditional: item.roomAirConditional,
                         roomHairdryer: item.roomHairdryer,
@@ -288,6 +289,7 @@ exports.updateHotel = (req, res) => {
                                     bedRooms: item.bedRooms,
                                     maxDay: item.maxDay,
                                     price: item.price,
+                                    lstImg: item.lstImg,
                                     bedroomDetail: bedRoomDetails,
                                     roomAirConditional: item.roomAirConditional,
                                     roomHairdryer: item.roomHairdryer,
@@ -401,7 +403,7 @@ exports.getHotelById = async (req, res) => {
             }
         ).then(
             await RoomDetails.find({
-                "hotelObj._id": hotelObjId
+                "hotelObj.nameSpace": hotelObjId
             }).then(
                 roomDetails => {
                     listRoomDetails.push(roomDetails)
@@ -410,6 +412,7 @@ exports.getHotelById = async (req, res) => {
         )
         objectRes.push(tienNghi);
         objectRes.push(listRoomDetails)
+        console.log(listRoomDetails)
         res.status(200).send(objectRes)
     } catch (error) {
         res.send({

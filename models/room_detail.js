@@ -7,6 +7,7 @@ const RoomDetailSchema = mongoose.Schema({
     maxDay: {type: Number, default: 1},
     promotion: {type: Number, default: 0},
     price: {type: String, default: 0},
+    lstImg:{type: String },
     bedroomDetail: {type: Array},
     roomType: {type: Number, default: 1},
     roomAirConditional: {type: Boolean, default: true},
