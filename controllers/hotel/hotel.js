@@ -17,15 +17,17 @@ const Summarys = mongoose.model('Summarys');
 
 exports.createHotel = (req, res) => {
     console.log(req.body)
+    let cancellationPolicy = req.body.hotel.cancellationPolicy === null || req.body.hotel.cancellationPolicy === undefined ? 1 : req.body.hotel.cancellationPolicy;
+    let reservationTime = req.body.hotel.reservationTime === null || req.body.hotel.reservationTime === undefined ? 1 : req.body.hotel.reservationTime;
     const hotel = new Hotels({
         name: req.body.hotel.name,
         address: req.body.hotel.address,
         guideToHotel: req.body.hotel.guideToHotel,
         imageUrl: req.body.hotel.imageUrl,
-        cancellationPolicy: req.body.hotel.cancellationPolicy,
+        cancellationPolicy: cancellationPolicy,
         country: req.body.hotel.country,
         province: req.body.hotel.province,
-        reservationTime: req.body.hotel.reservationTime,
+        reservationTime: reservationTime,
         image: req.body.hotel.image,
         rulerHotel: req.body.hotel.rulerHotel,
         sqm: req.body.hotel.sqm,
@@ -369,6 +371,33 @@ exports.getHotelSearch = (async (req, res) => {
     })
 });
 
+exports.getHotelFind = (async (req, res) => {
+    let hotelList = [];
+    await Hotels.find().then(async (hotel) => {
+        for (let item of hotel) {
+            const id = mongoose.Types.ObjectId(item._id);
+            const rooms = await this.getRoom(id);
+            const facilities = await this.getFaciliti(id);
+            const object = {
+                hotel: item,
+                roomDetail: rooms,
+                faciliti: facilities
+            }
+            hotelList.push(object);
+        }
+        return res.send({
+            hotels: hotelList,
+            status: 200,
+            message: 'Tìm kiếm khách sạn thành công!'
+        });
+    }).catch(err => {
+        console.log('not found hotel');
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding hotel'
+        })
+    })
+});
 
 exports.getHotelByUser = (async (req, res) => {
 
@@ -391,7 +420,7 @@ exports.getHotelById = async (req, res) => {
     const hotelObjId = req.params.id;
     let objectRes = []
 
-    let tienNghi = new Facilities; 
+    let tienNghi = new Facilities;
     let listRoomDetails = []
     try {
         await Facilities.find({
@@ -542,3 +571,12 @@ exports.updateStatusHotel = async (req, res) => {
         }
     });
 };
+
+// callback
+
+exports.getRoom = function (id) {
+    return RoomDetails.find({"hotelObj._id": id});
+}
+exports.getFaciliti = function (id) {
+    return Facilities.findOne({"hotelObj._id": id});
+}

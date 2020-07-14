@@ -6,6 +6,7 @@ module.exports = app => {
     app.post("/createHotel", VerifyUserByToken, hotel.createHotel);
     app.get('/getHotels', VerifyRoleByToken, hotel.getHotel);
     app.get('/getHotelSearch', hotel.getHotelSearch);
+    app.get('/getHotelFind', hotel.getHotelFind);
     app.get('/getHotelsByUser/:id', VerifyUserByToken, hotel.getHotelByUser);
     app.get('/getHotel/:id', VerifyUserByToken, hotel.getHotelById);
     app.post("/updateStatusHotel", VerifyRoleByToken, hotel.updateStatusHotel);
