@@ -17,8 +17,10 @@ const Summarys = mongoose.model('Summarys');
 
 exports.createHotel = (req, res) => {
     console.log(req.body)
-    let cancellationPolicy = req.body.hotel.cancellationPolicy === null || req.body.hotel.cancellationPolicy === undefined ? 1 : req.body.hotel.cancellationPolicy;
-    let reservationTime = req.body.hotel.reservationTime === null || req.body.hotel.reservationTime === undefined ? 1 : req.body.hotel.reservationTime;
+    let cancellationPolicy = !req.body.hotel.cancellationPolicy ? 1 : req.body.hotel.cancellationPolicy;
+    let reservationTime = !req.body.hotel.reservationTime ? 1 : req.body.hotel.reservationTime;
+    console.log('KKakakakakaka');
+    console.log(cancellationPolicy + ',' + reservationTime);
     const hotel = new Hotels({
         name: req.body.hotel.name,
         address: req.body.hotel.address,
