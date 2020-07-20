@@ -76,6 +76,7 @@ exports.create =
             };
             const isHotelUser = req.body.user.isUserHotel
             const finalUser = new Users(user);
+            console.log(isHotelUser + 'có phải ks không')
             if (isHotelUser) {
                 finalUser.role = 1
             }

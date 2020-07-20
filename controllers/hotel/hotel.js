@@ -29,10 +29,28 @@ exports.createBooking = (req, res) => {
         totalAmountRoom: req.body.book.totalAmountRoom,
         totalMoney: req.body.book.totalMoney,
         date: req.body.book.date,
+        hotelObjId: req.body.book.hotelObjId,
+        hotelUser: req.body.book.hotelUser
     })
-
+    console.log(booking)
     booking.save()
         .then(data => {
+            let messageToHotel = new Messages({
+                user: data.email,
+                content: 'Bạn có 1 yêu cầu đặt phòng mới!!',
+                imageUrl: '',
+                videoUrl: '',
+                news: 1
+            });
+            messageToHotel.save().then(messageToHotel => {
+                messageToHotel.save()
+            }).catch(err => {
+                console.log('false to save message');
+                return res.send({
+                    status: 404,
+                    message: err.message || 'Some error occurred while save message'
+                });
+            });
 
             res.status(200).send({
                 book: data,
