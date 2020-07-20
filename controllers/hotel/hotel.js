@@ -36,7 +36,7 @@ exports.createBooking = (req, res) => {
     booking.save()
         .then(data => {
             let messageToHotel = new Messages({
-                user: data.email,
+                user: data.hotelUser,
                 content: 'Bạn có 1 yêu cầu đặt phòng mới!!',
                 imageUrl: '',
                 videoUrl: '',
