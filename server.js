@@ -52,6 +52,7 @@ require("./models/comment");
 require("./config/facebookconfig");
 require("./config/googleconfig");
 require("./models/message");
+require("./models/booking");
 require("./models/summary");
 require("./models/hotel");
 require("./models/facilities");

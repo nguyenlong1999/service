@@ -13,7 +13,38 @@ const CancelRooms = mongoose.model("CancelRooms");
 const Tokens = require("../../models/Token");
 const nodeMailer = require('nodemailer');
 const Summarys = mongoose.model('Summarys');
+// booking
+const Booking = mongoose.model('Booking');
 //POST new user route (optional, everyone has access)
+
+exports.createBooking = (req, res) => {
+    console.log(req.body)
+    const booking = new Booking({
+        hotelNameSpace: req.body.book.hotelNameSpace,
+        name: req.body.book.name,
+        email: req.body.book.email,
+        phone: req.body.book.phone,
+        roomDetailID: req.body.book.roomDetailID,
+        status: req.body.book.status,
+        totalAmountRoom: req.body.book.totalAmountRoom,
+        totalMoney: req.body.book.totalMoney,
+        date: req.body.book.date,
+    })
+
+    booking.save()
+        .then(data => {
+
+            res.status(200).send({
+                book: data,
+                status: 200,
+                message: 'Yêu cầu đặt phòng của bạn đã được gửi đi. Chờ khách sạn kiểm tra phòng'
+            })
+        }).catch(err => {
+        res.status(500).send({
+            message: err.message || 'Some error occurred while creating the booking'
+        })
+    })
+}
 
 exports.createHotel = (req, res) => {
     console.log(req.body)
