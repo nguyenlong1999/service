@@ -423,18 +423,36 @@ exports.getHotelSearch = (async (req, res) => {
 });
 
 exports.getHotelFind = (async (req, res) => {
+    const searchOpts = req.body.searchOption;
+    searchOpts.nameSpace = searchOpts.nameSpace.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    searchOpts.nameSpace = searchOpts.nameSpace.toLowerCase();
+    const name = searchOpts.nameSpace.split(' ');
+    searchOpts.nameSpace = name.join('-');
+    console.log(searchOpts.nameSpace)
     let hotelList = [];
     await Hotels.find().then(async (hotel) => {
         for (let item of hotel) {
-            const id = mongoose.Types.ObjectId(item._id);
-            const rooms = await this.getRoom(id);
-            const facilities = await this.getFaciliti(id);
-            const object = {
-                hotel: item,
-                roomDetail: rooms,
-                faciliti: facilities
+            let nameSpace = item.nameSpace;
+            if (nameSpace.includes(searchOpts.nameSpace) === true) {
+                const id = mongoose.Types.ObjectId(item._id);
+                const rooms = await this.getRoom(id);
+                let pass = false;
+                rooms.forEach(room => {
+                    if(room.accommodates >= searchOpts.personCount && rooms.length >= searchOpts.roomCount){
+                        pass = true;
+                    }
+                });
+                if(pass === true) {
+                    console.log(nameSpace)
+                    const facilities = await this.getFaciliti(id);
+                    const object = {
+                        hotel: item,
+                        roomDetail: rooms,
+                        faciliti: facilities
+                    }
+                    hotelList.push(object);
+                }
             }
-            hotelList.push(object);
         }
         return res.send({
             hotels: hotelList,
