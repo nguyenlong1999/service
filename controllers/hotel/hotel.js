@@ -438,11 +438,11 @@ exports.getHotelFind = (async (req, res) => {
                 const rooms = await this.getRoom(id);
                 let pass = false;
                 rooms.forEach(room => {
-                    if(room.accommodates >= searchOpts.personCount && rooms.length >= searchOpts.roomCount){
+                    if (room.accommodates >= searchOpts.personCount && rooms.length >= searchOpts.roomCount) {
                         pass = true;
                     }
                 });
-                if(pass === true) {
+                if (pass === true) {
                     console.log(nameSpace)
                     const facilities = await this.getFaciliti(id);
                     const object = {
@@ -453,6 +453,35 @@ exports.getHotelFind = (async (req, res) => {
                     hotelList.push(object);
                 }
             }
+        }
+        return res.send({
+            hotels: hotelList,
+            status: 200,
+            message: 'Tìm kiếm khách sạn thành công!'
+        });
+    }).catch(err => {
+        console.log('not found hotel');
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding hotel'
+        })
+    })
+});
+
+exports.getHotelFindAll = (async (req, res) => {
+    let hotelList = [];
+    console.log('âaaaaaaaaaaaaaaaaaa')
+    await Hotels.find().then(async (hotel) => {
+        for (let item of hotel) {
+            const id = mongoose.Types.ObjectId(item._id);
+            const rooms = await this.getRoom(id);
+            const facilities = await this.getFaciliti(id);
+            const object = {
+                hotel: item,
+                roomDetail: rooms,
+                faciliti: facilities
+            }
+            hotelList.push(object);
         }
         return res.send({
             hotels: hotelList,
