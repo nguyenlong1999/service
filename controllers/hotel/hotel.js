@@ -601,6 +601,143 @@ exports.getHotelById = async (req, res) => {
     }
 };
 
+exports.updateStatusBooking = async (req, res) => {
+     var idBook = mongoose.Types.ObjectId(req.body.booking.idBooking);
+     var emailUser = req.body.booking.idUserBook
+     var emailUserHotel = req.body.booking.idUserHotel
+    var actionName = req.body.booking.actionName
+    console.log(req.body)
+    await Booking.findOne({_id: idBook},async function (err, book) {
+        if (err || book === null) {
+            console.log(book);
+            return res.send({
+                status: 401,
+                message: 'Không thể tìm thấy bản ghi!'
+            });
+        } else {
+            let message = new Messages({
+                user: emailUser,
+                content: '',
+                imageUrl: '',
+                videoUrl: '',
+                news: 0
+            });
+            let messageAdmin = new Messages({
+                user: emailUserHotel,
+                content: '',
+                imageUrl: '',
+                videoUrl: '',
+                news: 1
+            });
+           // const user = await this.getUserByEmail(emailUser)
+            // console.log(user)
+            // const hotel = await this.getHotelByNameSpace(emailUserHotel)
+            // console.log(hotel)
+            console.log(book)
+            const roomDetail = await this.getRoomByID(book.roomDetailID)
+            if (actionName === 'Chấp nhận') {
+                let nameTypeRoom =''
+                if(roomDetail.roomType == 1) {
+                    nameTypeRoom = 'Phòng tiêu chuẩn'
+                }
+                if(roomDetail.roomType == 2) {
+                    nameTypeRoom = 'Phòng view đẹp'
+                }
+                if(roomDetail.roomType == 3) {
+                    nameTypeRoom = 'Phòng cao cấp'
+                }
+                if(roomDetail.roomType == 4) {
+                    nameTypeRoom = 'Phòng siêu sang'
+                }
+                if(roomDetail.roomType == 5) {
+                    nameTypeRoom = 'Phòng đôi'
+                }
+                if(roomDetail.roomType == 6) {
+                    nameTypeRoom = 'Phòng Tổng thống'
+                }
+                if(roomDetail.roomType == 7) {
+                    nameTypeRoom = 'Phòng Hoàng gia'
+                }
+                book.status = 1;
+                message.content = 'Yêu cầu đặt phòng của bạn thành công. Vui lòng kiểm tra email để hoàn thành thủ tục đặt phòng'
+                messageAdmin.content = 'Xét duyệt yêu cầu đặt phòng thành công';
+
+                let transporter = nodeMailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    port: 465,
+                    secure: true,
+                    auth: {
+                        user: 'booking.hotel.com.2020@gmail.com',
+                        pass: '123456a@A'
+                    }
+                });
+                let mailOptions = {
+                    from: 'Ban quản trị website Booking <booking.hotel.com.2020@gmail.com>', // sender address
+                    to: emailUser, // list of receivers
+                    subject: 'Chào mừng đến trang web Booking', // Subject line
+                    text: req.body.body, // plain text body
+                    html: 'Chúc mừng bạn ' + book.name + ' đã đặt phòng thành công. <br> Thông tin phòng của quý khách là:' +
+                        '<br> Tên khách sạn: ' + roomDetail.hotelObj.name +
+                         '<br> Địa chỉ: ' + roomDetail.hotelObj.address +
+                         '<br> Thông tin phòng đặt: ' +
+                         '<br> -Hạng phòng: ' + nameTypeRoom +
+                         '<br> -Số lượng: ' + book.totalAmountRoom +
+                         '<br> -Từ ngày: ' + book.date.begin  +
+                         '<br> -Đến ngày: ' + book.date.end  +
+                         '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') +'VND'+
+                         '<br> -Trạng thái: Chưa thanh toán'+
+                         '<br> Xin vui lòng ấn vào link này để thanh toán hóa đơn xxxxxxxx ' +
+                         '<br> Link thanh toán sẽ hết hạn trong vòng 1h. Hệ thống sẽ tự hủy giao dịch đặt phòng của quý khách.'
+                };
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        return console.log(error);
+                    }
+                    console.log('Message %s sent: %s', info.messageId, info.response);
+                });
+                book.save((function (err) {
+                    if (err) {
+                        return res.send({
+                            status: 401,
+                            message: actionName + ' không thành công!'
+                        });
+                    } else {
+                        message.save().then(newMessage => {
+                            messageAdmin.save().then(newMessageAdmin => {
+                                return res.send({
+                                    status: 200,
+                                    book: book,
+                                    message: newMessage,
+                                    messageAdmin: newMessageAdmin,
+                                });
+                            }).catch(err => {
+                                console.log('false to save messageAdmin');
+                                return res.send({
+                                    status: 404,
+                                    message: err.message || 'Some error occurred while save messageAdmin'
+                                });
+                            });
+                        }).catch(err => {
+                            console.log('false to save message');
+                            return res.send({
+                                status: 404,
+                                message: err.message || 'Some error occurred while save message'
+                            });
+                        });
+                    }
+                }))
+
+            }
+
+            // else if (actionName === 'Bỏ duyệt') {
+            //     hotel.status = 0;
+            //     message.content = 'Khác sạn ' + hotel.name + ' của bạn đã bị hệ thống cho ngừng hoạt động!';
+            //     messageAdmin.content = 'Bạn đã bỏ duyệt thành công khách sạn ' + hotel.name + ' của thành viên ' + hotel.user.email;
+            // }
+        }
+    })
+}
+
 exports.updateStatusHotel = async (req, res) => {
     var idUser = mongoose.Types.ObjectId(req.body.hotel.idUser);
     var idHotel = mongoose.Types.ObjectId(req.body.hotel.idHotel);
@@ -614,6 +751,7 @@ exports.updateStatusHotel = async (req, res) => {
                 message: 'Không thể tìm thấy khách sạn!'
             });
         } else {
+
             Users.findOne({_id: idUser}, function (err, user) {
                 if (err || user === null) {
                     return res.send({
@@ -724,6 +862,20 @@ exports.updateStatusHotel = async (req, res) => {
 
 // callback
 
+// đây là của long đz
+getUserByEmail = function (email) {
+    return Users.findOne({email: email});
+}
+
+getRoomByID = function (id) {
+    return RoomDetails.findOne({_id: id});
+}
+
+getHotelByNameSpace = function (namespc) {
+    return Hotels.findOne({nameSpace: namespc});
+}
+
+// ở dưới là của quang ngáo
 exports.getRoom = function (id) {
     return RoomDetails.find({"hotelObj._id": id});
 }
