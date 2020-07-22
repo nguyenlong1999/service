@@ -124,7 +124,7 @@ exports.create =
                         text: req.body.body, // plain text body
                         html: 'Chúc mừng bạn đã đăng ký thành công tài khoản trên trang booking.com ' +
                             '<br> Vui lòng xác thực tài khoản đăng ký bằng link sau:' +
-                            '<br> localhost:4200/active/' + finalUser._id
+                            '<br> https://localhost:4200/active/' + finalUser._id
                         // html body
                     };
 
