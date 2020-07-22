@@ -622,6 +622,13 @@ exports.updateStatusBooking = async (req, res) => {
                 videoUrl: '',
                 news: 0
             });
+            let messageUse = new Messages({
+                user: book.email,
+                content: '',
+                imageUrl: '',
+                videoUrl: '',
+                news: 1
+            });
             let messageAdmin = new Messages({
                 user: emailUserHotel,
                 content: '',
@@ -727,6 +734,152 @@ exports.updateStatusBooking = async (req, res) => {
                     }
                 }))
 
+            }
+            if (actionName === 'Thanh toán'){
+                let nameTypeRoom =''
+                if(roomDetail.roomType == 1) {
+                    nameTypeRoom = 'Phòng tiêu chuẩn'
+                }
+                if(roomDetail.roomType == 2) {
+                    nameTypeRoom = 'Phòng view đẹp'
+                }
+                if(roomDetail.roomType == 3) {
+                    nameTypeRoom = 'Phòng cao cấp'
+                }
+                if(roomDetail.roomType == 4) {
+                    nameTypeRoom = 'Phòng siêu sang'
+                }
+                if(roomDetail.roomType == 5) {
+                    nameTypeRoom = 'Phòng đôi'
+                }
+                if(roomDetail.roomType == 6) {
+                    nameTypeRoom = 'Phòng Tổng thống'
+                }
+                if(roomDetail.roomType == 7) {
+                    nameTypeRoom = 'Phòng Hoàng gia'
+                }
+
+                book.status = 2;
+                console.log('đã thanh toán')
+                console.log(roomDetail)
+                message.content = 'Khách hàng đã thanh toán thành công. Xin cảm ơn'
+                messageUse.content = 'Khách hàng đã thanh toán thành công loại phòng: ' + nameTypeRoom
+                    + ' Tên khách sạn: ' + roomDetail.hotelObj.name
+                    + ' Số lượng: ' + book.totalAmountRoom
+                    + ' Từ ngày: ' + book.date.begin
+                    + ' Đến ngày: ' + book.date.end +
+                    ' Xin cảm ơn.'
+                ;
+                messageAdmin.content = 'Khách hàng '+ book.email +' đã thanh toán loại phòng của bạn: ' + nameTypeRoom +
+                    ' Số lượng: ' + book.totalAmountRoom +
+                    ' Từ ngày: ' + book.date.begin +
+                    ' Đến ngày: ' + book.date.end
+                ;
+
+                book.save((function (err) {
+                    if (err) {
+                        return res.send({
+                            status: 401,
+                            message: actionName + ' không thành công!'
+                        });
+                    } else {
+                        message.save().then(newMessage => {
+                            messageUse.save()
+                            messageAdmin.save().then(newMessageAdmin => {
+                                return res.send({
+                                    status: 200,
+                                    book: book,
+                                    message: newMessage,
+                                    messageAdmin: newMessageAdmin,
+                                    hotelUSe: book.hotelUser
+                                });
+                            }).catch(err => {
+                                console.log('false to save messageAdmin');
+                                return res.send({
+                                    status: 404,
+                                    message: err.message || 'Some error occurred while save messageAdmin'
+                                });
+                            });
+                        }).catch(err => {
+                            console.log('false to save message');
+                            return res.send({
+                                status: 404,
+                                message: err.message || 'Some error occurred while save message'
+                            });
+                        });
+                    }
+                }))
+            }
+
+            if (actionName === 'Hủy phòng'){
+                let nameTypeRoom =''
+                if(roomDetail.roomType == 1) {
+                    nameTypeRoom = 'Phòng tiêu chuẩn'
+                }
+                if(roomDetail.roomType == 2) {
+                    nameTypeRoom = 'Phòng view đẹp'
+                }
+                if(roomDetail.roomType == 3) {
+                    nameTypeRoom = 'Phòng cao cấp'
+                }
+                if(roomDetail.roomType == 4) {
+                    nameTypeRoom = 'Phòng siêu sang'
+                }
+                if(roomDetail.roomType == 5) {
+                    nameTypeRoom = 'Phòng đôi'
+                }
+                if(roomDetail.roomType == 6) {
+                    nameTypeRoom = 'Phòng Tổng thống'
+                }
+                if(roomDetail.roomType == 7) {
+                    nameTypeRoom = 'Phòng Hoàng gia'
+                }
+
+                book.status = -1;
+                console.log('Hủy phòng')
+                console.log(roomDetail)
+                message.content = 'Khách hàng đã hủy phòng thành công. Xin cảm ơn'
+                messageUse.content = 'Khách hàng đã hủy  phòng thành công. Xin cảm ơn'
+                ;
+                messageAdmin.content = 'Khách hàng '+ book.email +' đã hủy loại phòng của bạn: ' + nameTypeRoom +
+                    ' Số lượng: ' + book.totalAmountRoom +
+                    ' Từ ngày: ' + book.date.begin +
+                    ' Đến ngày: ' + book.date.end
+                ;
+
+                book.save((function (err) {
+                    if (err) {
+                        return res.send({
+                            status: 401,
+                            message: actionName + ' không thành công!'
+                        });
+                    } else {
+                        message.save().then(newMessage => {
+                            messageUse.save()
+                            messageAdmin.save().then(newMessageAdmin => {
+                                return res.send({
+                                    status: 200,
+                                    book: book,
+                                    message: newMessage,
+                                    messageAdmin: newMessageAdmin,
+                                    hotelUSe: book.hotelUser
+                                });
+                            }).catch(err => {
+                                console.log('false to save messageAdmin');
+                                return res.send({
+                                    status: 404,
+                                    message: err.message || 'Some error occurred while save messageAdmin'
+                                });
+                            });
+                        }).catch(err => {
+                            console.log('false to save message');
+                            return res.send({
+                                status: 404,
+                                message: err.message || 'Some error occurred while save message'
+                            });
+                        });
+                    }
+                }))
             }
 
             // else if (actionName === 'Bỏ duyệt') {
