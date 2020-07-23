@@ -498,11 +498,11 @@ exports.getHotelFindAll = (async (req, res) => {
 });
 
 exports.getBookingByUser = (async (req, res) => {
-
     // const UserObjId = mongoose.Types.ObjectId(req.params.id);
-
     await Booking.find({
         "hotelUser": req.params.email
+    }).sort({
+        createdAt: -1
     }).then(booking => {
         res.status(200).send(booking)
     }).catch(err => {
