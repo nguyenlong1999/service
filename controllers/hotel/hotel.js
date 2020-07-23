@@ -898,6 +898,34 @@ exports.updateStatusBooking = async (req, res) => {
                     ' Đến ngày: ' + book.date.end
                 ;
 
+                let messageToUserUpdate = new Messages({
+                    user: '',
+                    content: 'Khách hàng đã thanh toán thành công loại phòng: ' + nameTypeRoom
+                        + ' Tên khách sạn: ' + roomDetail.hotelObj.name
+                        + ' Số lượng: ' + book.totalAmountRoom
+                        + ' Từ ngày: ' + book.date.begin
+                        + ' Đến ngày: ' + book.date.end +
+                        ' Xin cảm ơn.',
+                    imageUrl: '',
+                    videoUrl: '',
+                    news: 1
+                });
+
+                if (book.userUpdateId !== '' && book.userUpdateId != null) {
+                    console.log('vào đây khi có data')
+                    console.log(book)
+                    const id = mongoose.Types.ObjectId(book.userUpdateId);
+                    Users.findOne({_id: id}, function (err, user) {
+                        if (err || user === null || book.email == user.email) {
+                            console.log(user);
+                        } else {
+                            messageToUserUpdate.user = user.email;
+                            messageToUserUpdate.save();
+                            console.log(messageToUserUpdate)
+                        }
+                    })
+                }
+
                 book.save((function (err) {
                     if (err) {
                         return res.send({
@@ -913,6 +941,7 @@ exports.updateStatusBooking = async (req, res) => {
                                     book: book,
                                     message: newMessage,
                                     messageAdmin: newMessageAdmin,
+                                    messageToUserUpdate: messageToUserUpdate,
                                     hotelUSe: book.hotelUser
                                 });
                             }).catch(err => {
