@@ -742,7 +742,7 @@ exports.updateStatusBooking = async (req, res) => {
                             console.log(book)
                             const id = mongoose.Types.ObjectId(book.userUpdateId);
                             Users.findOne({_id: id}, function (err, user) {
-                                if (err || user === null) {
+                                if (err || user === null || book.email == user.email) {
                                     console.log(user);
                                 } else {
                                     messageToUserUpdate.user = user.email;
