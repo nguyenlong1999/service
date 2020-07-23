@@ -535,6 +535,23 @@ exports.getBookingByUser = (async (req, res) => {
     })
 });
 
+exports.getBookingByUserRegister = (async (req, res) => {
+     // const UserObjId = mongoose.Types.ObjectId(req.params.id);
+    await Booking.find({
+        "userUpdateId": req.params.id
+    }).sort({
+        createdAt: -1
+    }).then(booking => {
+        res.status(200).send(booking)
+    }).catch(err => {
+        console.log('not found hotel');
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding hotel'
+        })
+    })
+});
+
 exports.getHotelByUser = (async (req, res) => {
 
     const UserObjId = mongoose.Types.ObjectId(req.params.id);
@@ -551,41 +568,6 @@ exports.getHotelByUser = (async (req, res) => {
         })
     })
 });
-
-exports.getHotelById = async (req, res) => {
-    const hotelObjId = req.params.id;
-    let objectRes = []
-
-    let tienNghi = new Facilities;
-    let listRoomDetails = []
-    try {
-        await Facilities.find({
-            "hotelObj.nameSpace": hotelObjId
-        }).then(
-            facilities => {
-                // res.status(200).send(facilities)
-                tienNghi = facilities
-            }
-        ).then(
-            await RoomDetails.find({
-                "hotelObj.nameSpace": hotelObjId
-            }).then(
-                roomDetails => {
-                    listRoomDetails.push(roomDetails)
-                }
-            )
-        )
-        objectRes.push(tienNghi);
-        objectRes.push(listRoomDetails)
-        console.log(listRoomDetails)
-        res.status(200).send(objectRes)
-    } catch (error) {
-        res.send({
-            'status': 404,
-            'message': error.message || 'Some error occurred while finding facilities'
-        })
-    }
-};
 
 exports.getHotelById = async (req, res) => {
     const hotelObjId = req.params.id;
@@ -742,7 +724,7 @@ exports.updateStatusBooking = async (req, res) => {
                             console.log(book)
                             const id = mongoose.Types.ObjectId(book.userUpdateId);
                             Users.findOne({_id: id}, function (err, user) {
-                                if (err || user === null) {
+                                if (err || user === null || book.email == user.email) {
                                     console.log(user);
                                 } else {
                                     messageToUserUpdate.user = user.email;

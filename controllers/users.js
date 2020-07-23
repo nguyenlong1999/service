@@ -80,6 +80,7 @@ exports.create =
             if (isHotelUser) {
                 finalUser.role = 1
             }
+            console.log(isHotelUser +'đây là hotel????')
             Users.findOne({email: user.email}, function (err, users) {
                 if (users !== null) {
                     return res.send({
@@ -144,7 +145,7 @@ exports.create =
                         // html body
                     };
 
-                    if (finalUser) {
+                    if (finalUser == true) {
                         transporter.sendMail(mailOptionsHotels, (error, info) => {
                             if (error) {
                                 return console.log(error);

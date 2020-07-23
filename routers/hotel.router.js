@@ -16,4 +16,5 @@ module.exports = app => {
     app.post("/createBooking", hotel.createBooking);
     app.get("/getBookingByHotel/:email",/* VerifyUserByToken,*/ hotel.getBookingByUser)
     app.post("/updateStatusBook",/*VerifyUserByToken,*/ hotel.updateStatusBooking)
+    app.get("/getBookingByUserRegister/:id", hotel.getBookingByUserRegister)
 };
