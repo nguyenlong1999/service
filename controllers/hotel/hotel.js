@@ -30,7 +30,8 @@ exports.createBooking = (req, res) => {
         totalMoney: req.body.book.totalMoney,
         date: req.body.book.date,
         hotelObjId: req.body.book.hotelObjId,
-        hotelUser: req.body.book.hotelUser
+        hotelUser: req.body.book.hotelUser,
+        userUpdateId: req.body.book.userUpdateId
     })
     console.log(booking)
     booking.save()
@@ -42,6 +43,26 @@ exports.createBooking = (req, res) => {
                 videoUrl: '',
                 news: 1
             });
+            if (data.userUpdateId != '' && data.userUpdateId != null){
+                console.log('vào đây khi có data')
+                console.log(data)
+                const id = mongoose.Types.ObjectId(data.userUpdateId);
+                 Users.findOne({_id: id}, function (err, user) {
+                    if (err || user === null) {
+                        console.log(user);
+                    } else {
+                        let messageToUserUpdate = new Messages({
+                            user: user.email,
+                            content: 'Yêu cầu đặt phòng của bạn đã được gửi đi. Chờ khách sạn kiểm tra phòng!!',
+                            imageUrl: '',
+                            videoUrl: '',
+                            news: 1
+                        });
+                        messageToUserUpdate.save();
+                    }
+                })
+            }
+
             messageToHotel.save().then(messageToHotel => {
                 messageToHotel.save()
             }).catch(err => {
