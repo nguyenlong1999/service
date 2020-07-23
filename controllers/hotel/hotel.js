@@ -975,7 +975,7 @@ exports.updateStatusBooking = async (req, res) => {
                     nameTypeRoom = 'Phòng Hoàng gia'
                 }
 
-                book.status = -1;
+                book.status = -2;
                 console.log('Hủy phòng')
                 console.log(roomDetail)
                 message.content = 'Khách hàng đã hủy phòng thành công. Xin cảm ơn'
