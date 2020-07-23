@@ -788,6 +788,8 @@ exports.updateStatusBooking = async (req, res) => {
                 book.status = -1;
                 message.content = 'Rất tiếc. Khách sạn không đáp ứng đủ khả năng yêu cầu của quý khách. Xin quý khách thông cảm!'
                 messageAdmin.content = 'Từ chối đơn đặt phòng thành công';
+                messageUse.content = 'Rất tiếc. Khách sạn không đáp ứng đủ khả năng yêu cầu của quý khách. Xin quý khách thông cảm!'
+                ;
 
                 let transporter = nodeMailer.createTransport({
                     host: 'smtp.gmail.com',
@@ -823,6 +825,29 @@ exports.updateStatusBooking = async (req, res) => {
                     }
                     console.log('Message %s sent: %s', info.messageId, info.response);
                 });
+
+                let messageToUserUpdate = new Messages({
+                    user: '',
+                    content: 'Rất tiếc. Khách sạn không đáp ứng đủ khả năng yêu cầu của quý khách. Xin quý khách thông cảm!!',
+                    imageUrl: '',
+                    videoUrl: '',
+                    news: 1
+                });
+
+                if (book.userUpdateId !== '' && book.userUpdateId != null) {
+                    console.log('vào đây khi có data')
+                    console.log(book)
+                    const id = mongoose.Types.ObjectId(book.userUpdateId);
+                    Users.findOne({_id: id}, function (err, user) {
+                        if (err || user === null || book.email == user.email) {
+                            console.log(user);
+                        } else {
+                            messageToUserUpdate.user = user.email;
+                            messageToUserUpdate.save();
+                        }
+                    })
+                }
+
                 book.save((function (err) {
                     if (err) {
                         return res.send({
@@ -837,6 +862,7 @@ exports.updateStatusBooking = async (req, res) => {
                                     book: book,
                                     message: newMessage,
                                     messageAdmin: newMessageAdmin,
+                                    messageUseUpadte: messageToUserUpdate,
                                 });
                             }).catch(err => {
                                 console.log('false to save messageAdmin');
@@ -941,7 +967,7 @@ exports.updateStatusBooking = async (req, res) => {
                                     book: book,
                                     message: newMessage,
                                     messageAdmin: newMessageAdmin,
-                                    messageToUserUpdate: messageToUserUpdate,
+                                    messageUseUpadte: messageToUserUpdate,
                                     hotelUSe: book.hotelUser
                                 });
                             }).catch(err => {
@@ -961,8 +987,8 @@ exports.updateStatusBooking = async (req, res) => {
                     }
                 }))
             }
-
             if (actionName === 'Hủy phòng') {
+                console.log('vào đây để hủy')
                 let nameTypeRoom = ''
                 if (roomDetail.roomType == 1) {
                     nameTypeRoom = 'Phòng tiêu chuẩn'
@@ -990,13 +1016,33 @@ exports.updateStatusBooking = async (req, res) => {
                 console.log('Hủy phòng')
                 console.log(roomDetail)
                 message.content = 'Khách hàng đã hủy phòng thành công. Xin cảm ơn'
-                messageUse.content = 'Khách hàng đã hủy  phòng thành công. Xin cảm ơn'
-                ;
+                messageUse.content = 'Khách hàng đã hủy  phòng thành công. Xin cảm ơn';
                 messageAdmin.content = 'Khách hàng ' + book.email + ' đã hủy loại phòng của bạn: ' + nameTypeRoom +
                     ' Số lượng: ' + book.totalAmountRoom +
                     ' Từ ngày: ' + book.date.begin +
                     ' Đến ngày: ' + book.date.end
                 ;
+                let messageToUserUpdate = new Messages({
+                    user: '',
+                    content: 'Khách hàng đã hủy phòng thành công. Xin cảm ơn!',
+                    imageUrl: '',
+                    videoUrl: '',
+                    news: 1
+                });
+                if (book.userUpdateId != '' && book.userUpdateId != null) {
+                    console.log('vào đây khi có data')
+                    console.log(book)
+                    const id = mongoose.Types.ObjectId(book.userUpdateId);
+                    Users.findOne({_id: id}, function (err, user) {
+                        if (err || user === null || book.email == user.email) {
+                            console.log(user);
+                        } else {
+                            messageToUserUpdate.user = user.email;
+                            messageToUserUpdate.save();
+                            console.log(messageToUserUpdate)
+                        }
+                    })
+                }
 
                 book.save((function (err) {
                     if (err) {
@@ -1013,6 +1059,7 @@ exports.updateStatusBooking = async (req, res) => {
                                     book: book,
                                     message: newMessage,
                                     messageAdmin: newMessageAdmin,
+                                    messageUseUpadte: messageToUserUpdate,
                                     hotelUSe: book.hotelUser
                                 });
                             }).catch(err => {
@@ -1032,7 +1079,6 @@ exports.updateStatusBooking = async (req, res) => {
                     }
                 }))
             }
-
             // else if (actionName === 'Bỏ duyệt') {
             //     hotel.status = 0;
             //     message.content = 'Khác sạn ' + hotel.name + ' của bạn đã bị hệ thống cho ngừng hoạt động!';
@@ -1116,6 +1162,7 @@ exports.updateStatusHotel = async (req, res) => {
                                         hotel: hotel,
                                         message: newMessage,
                                         messageAdmin: newMessageAdmin,
+                                        messageUseUpadte: messageToUserUpdate,
                                     });
                                 }).catch(err => {
                                     console.log('false to save messageAdmin');
