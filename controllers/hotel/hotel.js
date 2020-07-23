@@ -30,7 +30,8 @@ exports.createBooking = (req, res) => {
         totalMoney: req.body.book.totalMoney,
         date: req.body.book.date,
         hotelObjId: req.body.book.hotelObjId,
-        hotelUser: req.body.book.hotelUser
+        hotelUser: req.body.book.hotelUser,
+        userUpdateId: req.body.book.userUpdateId
     })
     console.log(booking)
     booking.save()
@@ -42,6 +43,26 @@ exports.createBooking = (req, res) => {
                 videoUrl: '',
                 news: 1
             });
+            if (data.userUpdateId != '' && data.userUpdateId != null) {
+                console.log('vào đây khi có data')
+                console.log(data)
+                const id = mongoose.Types.ObjectId(data.userUpdateId);
+                Users.findOne({_id: id}, function (err, user) {
+                    if (err || user === null) {
+                        console.log(user);
+                    } else {
+                        let messageToUserUpdate = new Messages({
+                            user: user.email,
+                            content: 'Yêu cầu đặt phòng của bạn đã được gửi đi. Chờ khách sạn kiểm tra phòng!!',
+                            imageUrl: '',
+                            videoUrl: '',
+                            news: 1
+                        });
+                        messageToUserUpdate.save();
+                    }
+                })
+            }
+
             messageToHotel.save().then(messageToHotel => {
                 messageToHotel.save()
             }).catch(err => {
@@ -602,12 +623,12 @@ exports.getHotelById = async (req, res) => {
 };
 
 exports.updateStatusBooking = async (req, res) => {
-     var idBook = mongoose.Types.ObjectId(req.body.booking.idBooking);
-     var emailUser = req.body.booking.idUserBook
-     var emailUserHotel = req.body.booking.idUserHotel
+    var idBook = mongoose.Types.ObjectId(req.body.booking.idBooking);
+    var emailUser = req.body.booking.idUserBook
+    var emailUserHotel = req.body.booking.idUserHotel
     var actionName = req.body.booking.actionName
     console.log(req.body)
-    await Booking.findOne({_id: idBook},async function (err, book) {
+    await Booking.findOne({_id: idBook}, async function (err, book) {
         if (err || book === null) {
             console.log(book);
             return res.send({
@@ -636,33 +657,33 @@ exports.updateStatusBooking = async (req, res) => {
                 videoUrl: '',
                 news: 1
             });
-           // const user = await this.getUserByEmail(emailUser)
+            // const user = await this.getUserByEmail(emailUser)
             // console.log(user)
             // const hotel = await this.getHotelByNameSpace(emailUserHotel)
             // console.log(hotel)
             console.log(book)
             const roomDetail = await this.getRoomByID(book.roomDetailID)
             if (actionName === 'Chấp nhận') {
-                let nameTypeRoom =''
-                if(roomDetail.roomType == 1) {
+                let nameTypeRoom = ''
+                if (roomDetail.roomType == 1) {
                     nameTypeRoom = 'Phòng tiêu chuẩn'
                 }
-                if(roomDetail.roomType == 2) {
+                if (roomDetail.roomType == 2) {
                     nameTypeRoom = 'Phòng view đẹp'
                 }
-                if(roomDetail.roomType == 3) {
+                if (roomDetail.roomType == 3) {
                     nameTypeRoom = 'Phòng cao cấp'
                 }
-                if(roomDetail.roomType == 4) {
+                if (roomDetail.roomType == 4) {
                     nameTypeRoom = 'Phòng siêu sang'
                 }
-                if(roomDetail.roomType == 5) {
+                if (roomDetail.roomType == 5) {
                     nameTypeRoom = 'Phòng đôi'
                 }
-                if(roomDetail.roomType == 6) {
+                if (roomDetail.roomType == 6) {
                     nameTypeRoom = 'Phòng Tổng thống'
                 }
-                if(roomDetail.roomType == 7) {
+                if (roomDetail.roomType == 7) {
                     nameTypeRoom = 'Phòng Hoàng gia'
                 }
                 book.status = 1;
@@ -685,16 +706,16 @@ exports.updateStatusBooking = async (req, res) => {
                     text: req.body.body, // plain text body
                     html: 'Chúc mừng bạn ' + book.name + ' đã đặt phòng thành công. <br> Thông tin phòng của quý khách là:' +
                         '<br> Tên khách sạn: ' + roomDetail.hotelObj.name +
-                         '<br> Địa chỉ: ' + roomDetail.hotelObj.address +
-                         '<br> Thông tin phòng đặt: ' +
-                         '<br> -Hạng phòng: ' + nameTypeRoom +
-                         '<br> -Số lượng: ' + book.totalAmountRoom +
-                         '<br> -Từ ngày: ' + book.date.begin  +
-                         '<br> -Đến ngày: ' + book.date.end  +
-                         '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') +'VND'+
-                         '<br> -Trạng thái: Chưa thanh toán'+
-                         '<br> Xin vui lòng ấn vào link này để thanh toán hóa đơn https://localhost:4200/pay/' + idBook +'#'+ book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') +'VND'+
-                         '<br> Link thanh toán sẽ hết hạn trong vòng 1h. Hệ thống sẽ tự hủy giao dịch đặt phòng của quý khách.'
+                        '<br> Địa chỉ: ' + roomDetail.hotelObj.address +
+                        '<br> Thông tin phòng đặt: ' +
+                        '<br> -Hạng phòng: ' + nameTypeRoom +
+                        '<br> -Số lượng: ' + book.totalAmountRoom +
+                        '<br> -Từ ngày: ' + book.date.begin +
+                        '<br> -Đến ngày: ' + book.date.end +
+                        '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
+                        '<br> -Trạng thái: Chưa thanh toán' +
+                        '<br> Xin vui lòng ấn vào link này để thanh toán hóa đơn https://localhost:4200/pay/' + idBook + '#' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
+                        '<br> Link thanh toán sẽ hết hạn trong vòng 1h. Hệ thống sẽ tự hủy giao dịch đặt phòng của quý khách.'
                 };
                 transporter.sendMail(mailOptions, (error, info) => {
                     if (error) {
@@ -709,13 +730,35 @@ exports.updateStatusBooking = async (req, res) => {
                             message: actionName + ' không thành công!'
                         });
                     } else {
+                        let messageToUserUpdate = new Messages({
+                            user: '',
+                            content: 'Yêu cầu đặt phòng của bạn thành công. Vui lòng kiểm tra email để hoàn thành thủ tục đặt phòng!!',
+                            imageUrl: '',
+                            videoUrl: '',
+                            news: 1
+                        });
+                        if (book.userUpdateId != '' && book.userUpdateId != null) {
+                            console.log('vào đây khi có data')
+                            console.log(book)
+                            const id = mongoose.Types.ObjectId(book.userUpdateId);
+                            Users.findOne({_id: id}, function (err, user) {
+                                if (err || user === null) {
+                                    console.log(user);
+                                } else {
+                                    messageToUserUpdate.user = user.email;
+                                    messageToUserUpdate.save();
+                                    console.log(messageToUserUpdate)
+                                }
+                            })
+                        }
                         message.save().then(newMessage => {
                             messageAdmin.save().then(newMessageAdmin => {
                                 return res.send({
                                     status: 200,
                                     book: book,
                                     message: newMessage,
-                                    messageAdmin: newMessageAdmin,
+                                    messageUseUpadte: messageToUserUpdate,
+                                    messageAdmin: newMessageAdmin
                                 });
                             }).catch(err => {
                                 console.log('false to save messageAdmin');
@@ -738,26 +781,26 @@ exports.updateStatusBooking = async (req, res) => {
 
             if (actionName === 'Từ chối') {
                 console.log('từ chối rồi')
-                let nameTypeRoom =''
-                if(roomDetail.roomType == 1) {
+                let nameTypeRoom = ''
+                if (roomDetail.roomType == 1) {
                     nameTypeRoom = 'Phòng tiêu chuẩn'
                 }
-                if(roomDetail.roomType == 2) {
+                if (roomDetail.roomType == 2) {
                     nameTypeRoom = 'Phòng view đẹp'
                 }
-                if(roomDetail.roomType == 3) {
+                if (roomDetail.roomType == 3) {
                     nameTypeRoom = 'Phòng cao cấp'
                 }
-                if(roomDetail.roomType == 4) {
+                if (roomDetail.roomType == 4) {
                     nameTypeRoom = 'Phòng siêu sang'
                 }
-                if(roomDetail.roomType == 5) {
+                if (roomDetail.roomType == 5) {
                     nameTypeRoom = 'Phòng đôi'
                 }
-                if(roomDetail.roomType == 6) {
+                if (roomDetail.roomType == 6) {
                     nameTypeRoom = 'Phòng Tổng thống'
                 }
-                if(roomDetail.roomType == 7) {
+                if (roomDetail.roomType == 7) {
                     nameTypeRoom = 'Phòng Hoàng gia'
                 }
                 book.status = -1;
@@ -784,11 +827,11 @@ exports.updateStatusBooking = async (req, res) => {
                         '<br> Thông tin phòng đặt: ' +
                         '<br> -Hạng phòng: ' + nameTypeRoom +
                         '<br> -Số lượng: ' + book.totalAmountRoom +
-                        '<br> -Từ ngày: ' + book.date.begin  +
-                        '<br> -Đến ngày: ' + book.date.end  +
-                        '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') +'VND'+
-                        '<br> -Trạng thái: Đã hủy'+
-                        '<br> -Nội dung: Đơn đặt phòng của bạn không thành công. Lý do: Khách sạn đã hết phòng không đáp ứng đủ nhu cầu đặt phòng của quý khách!! '+
+                        '<br> -Từ ngày: ' + book.date.begin +
+                        '<br> -Đến ngày: ' + book.date.end +
+                        '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
+                        '<br> -Trạng thái: Đã hủy' +
+                        '<br> -Nội dung: Đơn đặt phòng của bạn không thành công. Lý do: Khách sạn đã hết phòng không đáp ứng đủ nhu cầu đặt phòng của quý khách!! ' +
                         '<br> Mong quý khách thông cảm' +
                         '<br> Chúng tôi chân thành cảm ơn!!'
                 };
@@ -832,27 +875,27 @@ exports.updateStatusBooking = async (req, res) => {
 
             }
 
-            if (actionName === 'Thanh toán'){
-                let nameTypeRoom =''
-                if(roomDetail.roomType == 1) {
+            if (actionName === 'Thanh toán') {
+                let nameTypeRoom = ''
+                if (roomDetail.roomType == 1) {
                     nameTypeRoom = 'Phòng tiêu chuẩn'
                 }
-                if(roomDetail.roomType == 2) {
+                if (roomDetail.roomType == 2) {
                     nameTypeRoom = 'Phòng view đẹp'
                 }
-                if(roomDetail.roomType == 3) {
+                if (roomDetail.roomType == 3) {
                     nameTypeRoom = 'Phòng cao cấp'
                 }
-                if(roomDetail.roomType == 4) {
+                if (roomDetail.roomType == 4) {
                     nameTypeRoom = 'Phòng siêu sang'
                 }
-                if(roomDetail.roomType == 5) {
+                if (roomDetail.roomType == 5) {
                     nameTypeRoom = 'Phòng đôi'
                 }
-                if(roomDetail.roomType == 6) {
+                if (roomDetail.roomType == 6) {
                     nameTypeRoom = 'Phòng Tổng thống'
                 }
-                if(roomDetail.roomType == 7) {
+                if (roomDetail.roomType == 7) {
                     nameTypeRoom = 'Phòng Hoàng gia'
                 }
 
@@ -867,7 +910,7 @@ exports.updateStatusBooking = async (req, res) => {
                     + ' Đến ngày: ' + book.date.end +
                     ' Xin cảm ơn.'
                 ;
-                messageAdmin.content = 'Khách hàng '+ book.email +' đã thanh toán loại phòng của bạn: ' + nameTypeRoom +
+                messageAdmin.content = 'Khách hàng ' + book.email + ' đã thanh toán loại phòng của bạn: ' + nameTypeRoom +
                     ' Số lượng: ' + book.totalAmountRoom +
                     ' Từ ngày: ' + book.date.begin +
                     ' Đến ngày: ' + book.date.end
@@ -908,27 +951,27 @@ exports.updateStatusBooking = async (req, res) => {
                 }))
             }
 
-            if (actionName === 'Hủy phòng'){
-                let nameTypeRoom =''
-                if(roomDetail.roomType == 1) {
+            if (actionName === 'Hủy phòng') {
+                let nameTypeRoom = ''
+                if (roomDetail.roomType == 1) {
                     nameTypeRoom = 'Phòng tiêu chuẩn'
                 }
-                if(roomDetail.roomType == 2) {
+                if (roomDetail.roomType == 2) {
                     nameTypeRoom = 'Phòng view đẹp'
                 }
-                if(roomDetail.roomType == 3) {
+                if (roomDetail.roomType == 3) {
                     nameTypeRoom = 'Phòng cao cấp'
                 }
-                if(roomDetail.roomType == 4) {
+                if (roomDetail.roomType == 4) {
                     nameTypeRoom = 'Phòng siêu sang'
                 }
-                if(roomDetail.roomType == 5) {
+                if (roomDetail.roomType == 5) {
                     nameTypeRoom = 'Phòng đôi'
                 }
-                if(roomDetail.roomType == 6) {
+                if (roomDetail.roomType == 6) {
                     nameTypeRoom = 'Phòng Tổng thống'
                 }
-                if(roomDetail.roomType == 7) {
+                if (roomDetail.roomType == 7) {
                     nameTypeRoom = 'Phòng Hoàng gia'
                 }
 
@@ -938,7 +981,7 @@ exports.updateStatusBooking = async (req, res) => {
                 message.content = 'Khách hàng đã hủy phòng thành công. Xin cảm ơn'
                 messageUse.content = 'Khách hàng đã hủy  phòng thành công. Xin cảm ơn'
                 ;
-                messageAdmin.content = 'Khách hàng '+ book.email +' đã hủy loại phòng của bạn: ' + nameTypeRoom +
+                messageAdmin.content = 'Khách hàng ' + book.email + ' đã hủy loại phòng của bạn: ' + nameTypeRoom +
                     ' Số lượng: ' + book.totalAmountRoom +
                     ' Từ ngày: ' + book.date.begin +
                     ' Đến ngày: ' + book.date.end

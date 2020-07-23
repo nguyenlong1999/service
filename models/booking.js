@@ -10,7 +10,8 @@ const BookingSchema = mongoose.Schema({
     totalMoney: {type: Number, default: 0},
     date: {type: Object},
     hotelObjId: {type: String},
-    hotelUser: {type: String}
+    hotelUser: {type: String},
+    userUpdateId: {type: String, default: ''}
 }, {
     timestamps: true
 });
