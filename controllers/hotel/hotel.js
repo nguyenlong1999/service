@@ -536,7 +536,7 @@ exports.getBookingByUser = (async (req, res) => {
 });
 
 exports.getBookingByUserRegister = (async (req, res) => {
-     // const UserObjId = mongoose.Types.ObjectId(req.params.id);
+    // const UserObjId = mongoose.Types.ObjectId(req.params.id);
     await Booking.find({
         "userUpdateId": req.params.id
     }).sort({
@@ -670,6 +670,7 @@ exports.updateStatusBooking = async (req, res) => {
                 }
                 book.status = 1;
                 message.content = 'Yêu cầu đặt phòng của bạn thành công. Vui lòng kiểm tra email để hoàn thành thủ tục đặt phòng'
+                message.news = 1
                 messageAdmin.content = 'Xét duyệt yêu cầu đặt phòng thành công';
 
                 let transporter = nodeMailer.createTransport({
@@ -705,7 +706,7 @@ exports.updateStatusBooking = async (req, res) => {
                     }
                     console.log('Message %s sent: %s', info.messageId, info.response);
                 });
-                book.save((function (err) {
+                book.save((async function (err) {
                     if (err) {
                         return res.send({
                             status: 401,
@@ -720,20 +721,18 @@ exports.updateStatusBooking = async (req, res) => {
                             news: 1
                         });
                         if (book.userUpdateId != '' && book.userUpdateId != null) {
-                            console.log('vào đây khi có data')
-                            console.log(book)
                             const id = mongoose.Types.ObjectId(book.userUpdateId);
-                            Users.findOne({_id: id}, function (err, user) {
+                            await Users.findOne({_id: id}, function (err, user) {
                                 if (err || user === null || book.email == user.email) {
                                     console.log(user);
                                 } else {
+                                    console.log('vafo dday roi')
                                     messageToUserUpdate.user = user.email;
-                                    messageToUserUpdate.save();
-                                    console.log(messageToUserUpdate)
+                                    message.user = user.email
                                 }
                             })
                         }
-                        message.save().then(newMessage => {
+                        await message.save().then(newMessage => {
                             messageAdmin.save().then(newMessageAdmin => {
                                 return res.send({
                                     status: 200,
@@ -787,6 +786,7 @@ exports.updateStatusBooking = async (req, res) => {
                 }
                 book.status = -1;
                 message.content = 'Rất tiếc. Khách sạn không đáp ứng đủ khả năng yêu cầu của quý khách. Xin quý khách thông cảm!'
+                message.news = 1
                 messageAdmin.content = 'Từ chối đơn đặt phòng thành công';
                 messageUse.content = 'Rất tiếc. Khách sạn không đáp ứng đủ khả năng yêu cầu của quý khách. Xin quý khách thông cảm!'
                 ;
@@ -835,15 +835,14 @@ exports.updateStatusBooking = async (req, res) => {
                 });
 
                 if (book.userUpdateId !== '' && book.userUpdateId != null) {
-                    console.log('vào đây khi có data')
-                    console.log(book)
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
                         if (err || user === null || book.email == user.email) {
                             console.log(user);
                         } else {
-                            messageToUserUpdate.user = user.email;
-                            messageToUserUpdate.save();
+                            // messageToUserUpdate.user = user.email;
+                            // messageToUserUpdate.save();
+                            message.user = user.email
                         }
                     })
                 }
@@ -908,16 +907,17 @@ exports.updateStatusBooking = async (req, res) => {
                 }
 
                 book.status = 2;
-                console.log('đã thanh toán')
-                console.log(roomDetail)
-                message.content = 'Khách hàng đã thanh toán thành công. Xin cảm ơn'
-                messageUse.content = 'Khách hàng đã thanh toán thành công loại phòng: ' + nameTypeRoom
+                // message.content = 'Khách hàng đã thanh toán thành công. Xin cảm ơn'
+                message.news = 1
+                message.content = 'Khách hàng đã thanh toán thành công loại phòng: ' + nameTypeRoom
                     + ' Tên khách sạn: ' + roomDetail.hotelObj.name
                     + ' Số lượng: ' + book.totalAmountRoom
                     + ' Từ ngày: ' + book.date.begin
                     + ' Đến ngày: ' + book.date.end +
                     ' Xin cảm ơn.'
                 ;
+                messageAdmin.news = 1
+                messageAdmin.user = book.hotelUser
                 messageAdmin.content = 'Khách hàng ' + book.email + ' đã thanh toán loại phòng của bạn: ' + nameTypeRoom +
                     ' Số lượng: ' + book.totalAmountRoom +
                     ' Từ ngày: ' + book.date.begin +
@@ -945,9 +945,11 @@ exports.updateStatusBooking = async (req, res) => {
                         if (err || user === null || book.email == user.email) {
                             console.log(user);
                         } else {
-                            messageToUserUpdate.user = user.email;
-                            messageToUserUpdate.save();
-                            console.log(messageToUserUpdate)
+
+                            message.user = user.email
+                            // messageToUserUpdate.user = user.email;
+                            // messageToUserUpdate.save();
+                            // console.log(messageToUserUpdate)
                         }
                     })
                 }
@@ -960,7 +962,7 @@ exports.updateStatusBooking = async (req, res) => {
                         });
                     } else {
                         message.save().then(newMessage => {
-                            messageUse.save()
+                            // messageUse.save()
                             messageAdmin.save().then(newMessageAdmin => {
                                 return res.send({
                                     status: 200,
@@ -987,7 +989,7 @@ exports.updateStatusBooking = async (req, res) => {
                     }
                 }))
             }
-            if (actionName === 'Hủy phòng') {
+            if (actionName === 'Hủy phòng') { // hotel duyệt người dùng từ chối
                 console.log('vào đây để hủy')
                 let nameTypeRoom = ''
                 if (roomDetail.roomType == 1) {
@@ -1034,16 +1036,16 @@ exports.updateStatusBooking = async (req, res) => {
                     console.log(book)
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
+                        console.log(user)
                         if (err || user === null || book.email == user.email) {
                             console.log(user);
                         } else {
-                            messageToUserUpdate.user = user.email;
-                            messageToUserUpdate.save();
-                            console.log(messageToUserUpdate)
+                            message.user = user.email
                         }
                     })
                 }
-
+                messageAdmin.user = book.hotelUser
+                console.log(messageUse)
                 book.save((function (err) {
                     if (err) {
                         return res.send({
@@ -1052,16 +1054,14 @@ exports.updateStatusBooking = async (req, res) => {
                         });
                     } else {
                         message.save().then(newMessage => {
-                            messageUse.save()
-                            messageAdmin.save().then(newMessageAdmin => {
-                                return res.send({
-                                    status: 200,
-                                    book: book,
-                                    message: newMessage,
-                                    messageAdmin: newMessageAdmin,
-                                    messageUseUpadte: messageToUserUpdate,
-                                    hotelUSe: book.hotelUser
-                                });
+                            // messageUse.save()
+                            return res.send({
+                                status: 200,
+                                book: book,
+                                message: newMessage,
+                                messageAdmin: messageAdmin, // người dùng book nhưng từ chối thanh toán thì k cần
+                                hotelUSe: book.hotelUser
+                                // messageAdmin.save().then(newMessageAdmin => {}
                             }).catch(err => {
                                 console.log('false to save messageAdmin');
                                 return res.send({
@@ -1078,7 +1078,7 @@ exports.updateStatusBooking = async (req, res) => {
                         });
                     }
                 }))
-            }
+            } // của người dùng chưa thanh toán
             // else if (actionName === 'Bỏ duyệt') {
             //     hotel.status = 0;
             //     message.content = 'Khác sạn ' + hotel.name + ' của bạn đã bị hệ thống cho ngừng hoạt động!';
