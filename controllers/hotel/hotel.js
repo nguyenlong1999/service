@@ -639,10 +639,6 @@ exports.updateStatusBooking = async (req, res) => {
                 videoUrl: '',
                 news: 1
             });
-            // const user = await this.getUserByEmail(emailUser)
-            // console.log(user)
-            // const hotel = await this.getHotelByNameSpace(emailUserHotel)
-            // console.log(hotel)
             console.log(book)
             const roomDetail = await this.getRoomByID(book.roomDetailID)
             if (actionName === 'Chấp nhận') {
@@ -759,7 +755,6 @@ exports.updateStatusBooking = async (req, res) => {
                 }))
 
             }
-
             if (actionName === 'Từ chối') {
                 console.log('từ chối rồi')
                 let nameTypeRoom = ''
@@ -881,7 +876,6 @@ exports.updateStatusBooking = async (req, res) => {
                 }))
 
             }
-
             if (actionName === 'Thanh toán') {
                 let nameTypeRoom = ''
                 if (roomDetail.roomType == 1) {
@@ -936,20 +930,17 @@ exports.updateStatusBooking = async (req, res) => {
                     videoUrl: '',
                     news: 1
                 });
-
+                console.log(book)
+                console.log(message)
+                message.user = book.email
+                console.log(book.email)
                 if (book.userUpdateId !== '' && book.userUpdateId != null) {
-                    console.log('vào đây khi có data')
-                    console.log(book)
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
                         if (err || user === null || book.email == user.email) {
                             console.log(user);
                         } else {
-
                             message.user = user.email
-                            // messageToUserUpdate.user = user.email;
-                            // messageToUserUpdate.save();
-                            // console.log(messageToUserUpdate)
                         }
                     })
                 }
@@ -962,7 +953,6 @@ exports.updateStatusBooking = async (req, res) => {
                         });
                     } else {
                         message.save().then(newMessage => {
-                            // messageUse.save()
                             messageAdmin.save().then(newMessageAdmin => {
                                 return res.send({
                                     status: 200,
@@ -1079,11 +1069,109 @@ exports.updateStatusBooking = async (req, res) => {
                     }
                 }))
             } // của người dùng chưa thanh toán
-            // else if (actionName === 'Bỏ duyệt') {
-            //     hotel.status = 0;
-            //     message.content = 'Khác sạn ' + hotel.name + ' của bạn đã bị hệ thống cho ngừng hoạt động!';
-            //     messageAdmin.content = 'Bạn đã bỏ duyệt thành công khách sạn ' + hotel.name + ' của thành viên ' + hotel.user.email;
-            // }
+            if (actionName === 'Pay Cancel'){ // của người dùng đã thanh toán xog rồi hủy phòng
+                console.log('vào đây rồi')
+                let nameTypeRoom = ''
+                if (roomDetail.roomType == 1) {
+                    nameTypeRoom = 'Phòng tiêu chuẩn'
+                }
+                if (roomDetail.roomType == 2) {
+                    nameTypeRoom = 'Phòng view đẹp'
+                }
+                if (roomDetail.roomType == 3) {
+                    nameTypeRoom = 'Phòng cao cấp'
+                }
+                if (roomDetail.roomType == 4) {
+                    nameTypeRoom = 'Phòng siêu sang'
+                }
+                if (roomDetail.roomType == 5) {
+                    nameTypeRoom = 'Phòng đôi'
+                }
+                if (roomDetail.roomType == 6) {
+                    nameTypeRoom = 'Phòng Tổng thống'
+                }
+                if (roomDetail.roomType == 7) {
+                    nameTypeRoom = 'Phòng Hoàng gia'
+                }
+
+                book.status = 3;
+                // message.content = 'Khách hàng đã thanh toán thành công. Xin cảm ơn'
+                message.news = 1
+                message.content = 'Khách hàng đã hủy thành công loại phòng: ' + nameTypeRoom
+                    + ' Tên khách sạn: ' + roomDetail.hotelObj.name
+                    + ' Số lượng: ' + book.totalAmountRoom
+                    + ' Từ ngày: ' + book.date.begin
+                    + ' Đến ngày: ' + book.date.end;
+
+                messageAdmin.news = 1
+                messageAdmin.user = book.hotelUser
+                messageAdmin.content = 'Khách hàng ' + book.email + ' đã hủy loại phòng của bạn: ' + nameTypeRoom +
+                    ' Số lượng: ' + book.totalAmountRoom +
+                    ' Từ ngày: ' + book.date.begin +
+                    ' Đến ngày: ' + book.date.end
+                ;
+
+                let messageToUserUpdate = new Messages({
+                    user: '',
+                    content: 'Khách hàng đã thanh toán thành công loại phòng: ' + nameTypeRoom
+                        + ' Tên khách sạn: ' + roomDetail.hotelObj.name
+                        + ' Số lượng: ' + book.totalAmountRoom
+                        + ' Từ ngày: ' + book.date.begin
+                        + ' Đến ngày: ' + book.date.end +
+                        ' Xin cảm ơn.',
+                    imageUrl: '',
+                    videoUrl: '',
+                    news: 1
+                });
+                console.log(book)
+                console.log(message)
+                message.user = book.email
+                console.log(book.email)
+                if (book.userUpdateId !== '' && book.userUpdateId != null) {
+                    const id = mongoose.Types.ObjectId(book.userUpdateId);
+                    Users.findOne({_id: id}, function (err, user) {
+                        if (err || user === null || book.email == user.email) {
+                            console.log(user);
+                        } else {
+                            message.user = user.email
+                        }
+                    })
+                }
+
+                book.save((function (err) {
+                    if (err) {
+                        return res.send({
+                            status: 401,
+                            message: actionName + ' không thành công!'
+                        });
+                    } else {
+                        message.save().then(newMessage => {
+                            messageAdmin.save().then(newMessageAdmin => {
+                                return res.send({
+                                    status: 200,
+                                    book: book,
+                                    message: newMessage,
+                                    messageAdmin: newMessageAdmin,
+                                    messageUseUpadte: messageToUserUpdate,
+                                    hotelUSe: book.hotelUser
+                                });
+                            }).catch(err => {
+                                console.log('false to save messageAdmin');
+                                return res.send({
+                                    status: 404,
+                                    message: err.message || 'Some error occurred while save messageAdmin'
+                                });
+                            });
+                        }).catch(err => {
+                            console.log('false to save message');
+                            return res.send({
+                                status: 404,
+                                message: err.message || 'Some error occurred while save message'
+                            });
+                        });
+                    }
+                }))
+            }
         }
     })
 }
