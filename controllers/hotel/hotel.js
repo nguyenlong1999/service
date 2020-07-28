@@ -18,7 +18,6 @@ const Booking = mongoose.model('Booking');
 //POST new user route (optional, everyone has access)
 
 exports.createBooking = (req, res) => {
-    console.log(req.body)
     const booking = new Booking({
         hotelNameSpace: req.body.book.hotelNameSpace,
         name: req.body.book.name,
@@ -33,7 +32,6 @@ exports.createBooking = (req, res) => {
         hotelUser: req.body.book.hotelUser,
         userUpdateId: req.body.book.userUpdateId
     })
-    console.log(booking)
     booking.save()
         .then(data => {
             let messageToHotel = new Messages({
@@ -44,12 +42,10 @@ exports.createBooking = (req, res) => {
                 news: 1
             });
             if (data.userUpdateId != '' && data.userUpdateId != null) {
-                console.log('vào đây khi có data')
-                console.log(data)
                 const id = mongoose.Types.ObjectId(data.userUpdateId);
                 Users.findOne({_id: id}, function (err, user) {
                     if (err || user === null) {
-                        console.log(user);
+                        console.log(err);
                     } else {
                         let messageToUserUpdate = new Messages({
                             user: user.email,
@@ -86,11 +82,8 @@ exports.createBooking = (req, res) => {
 }
 
 exports.createHotel = (req, res) => {
-    console.log(req.body)
     let cancellationPolicy = !req.body.hotel.cancellationPolicy ? 1 : req.body.hotel.cancellationPolicy;
     let reservationTime = !req.body.hotel.reservationTime ? 1 : req.body.hotel.reservationTime;
-    console.log('KKakakakakaka');
-    console.log(cancellationPolicy + ',' + reservationTime);
     const hotel = new Hotels({
         name: req.body.hotel.name,
         address: req.body.hotel.address,
@@ -223,7 +216,6 @@ exports.createHotel = (req, res) => {
                     Summarys.find()
                         .then(summary => {
                             let sum = summary[0];
-                            console.log(sum);
                             sum.hotelCount++;
                             sum.save()
                                 .then(() => {
@@ -242,7 +234,6 @@ exports.createHotel = (req, res) => {
                                 });
                             });
                         }).catch(err => {
-                        console.log(err);
                         res.send({
                             'status': 404,
                             message: 'Lỗi khi tổng kết số khách sạn của trang web'
@@ -449,7 +440,6 @@ exports.getHotelFind = (async (req, res) => {
     searchOpts.nameSpace = searchOpts.nameSpace.toLowerCase();
     const name = searchOpts.nameSpace.split(' ');
     searchOpts.nameSpace = name.join('-');
-    console.log(searchOpts.nameSpace)
     let hotelList = [];
     await Hotels.find({status: 1}).then(async (hotel) => {
         for (let item of hotel) {
@@ -464,7 +454,6 @@ exports.getHotelFind = (async (req, res) => {
                     }
                 });
                 if (pass === true) {
-                    console.log(nameSpace)
                     const facilities = await this.getFaciliti(id);
                     const object = {
                         hotel: item,
@@ -571,10 +560,8 @@ exports.getHotelByUser = (async (req, res) => {
 exports.getHotelById = async (req, res) => {
     const hotelObjId = req.params.id;
     let objectRes = []
-
     let tienNghi = new Facilities;
     let listRoomDetails = [];
-    let countRating = 0;
     try {
         await Facilities.find({
             "hotelObj.nameSpace": hotelObjId
@@ -592,7 +579,8 @@ exports.getHotelById = async (req, res) => {
                 }
             )
         )
-        Booking.find({
+        let countRating = 0
+        await Booking.find({
             hotelNameSpace: hotelObjId,
             status: '2',
             rating: {$gt: 0}
@@ -602,7 +590,6 @@ exports.getHotelById = async (req, res) => {
         objectRes.push(tienNghi);
         objectRes.push(listRoomDetails)
         objectRes.push(countRating)
-        console.log(listRoomDetails)
         res.status(200).send(objectRes)
     } catch (error) {
         res.send({
@@ -616,7 +603,6 @@ exports.updateRatingInBooking = async (req, res) => {
     var idBook = mongoose.Types.ObjectId(req.body.object.idBook);
     var idHotel = req.body.object.hotelId;
     var rating = req.body.object.rating;
-    console.log(idHotel + 'hote; iD nfe')
     await Booking.findOne({_id: idBook}, async function (err, book) {
         if (err || book === null) {
             return res.send({
@@ -627,7 +613,6 @@ exports.updateRatingInBooking = async (req, res) => {
             book.rating = rating
             book.save().then(booking => {
                 // update rating ở trong facilities
-                // console.log(booking)
                 Hotels.findOne({nameSpace: idHotel}, function (err, hotel) {
                     if (err) {
                         return res.send({
@@ -677,10 +662,8 @@ exports.updateStatusBooking = async (req, res) => {
     var emailUser = req.body.booking.idUserBook
     var emailUserHotel = req.body.booking.idUserHotel
     var actionName = req.body.booking.actionName
-    console.log(req.body)
     await Booking.findOne({_id: idBook}, async function (err, book) {
         if (err || book === null) {
-            console.log(book);
             return res.send({
                 status: 401,
                 message: 'Không thể tìm thấy bản ghi!'
@@ -707,7 +690,6 @@ exports.updateStatusBooking = async (req, res) => {
                 videoUrl: '',
                 news: 1
             });
-            console.log(book)
             const roomDetail = await this.getRoomByID(book.roomDetailID)
             if (actionName === 'Chấp nhận') {
                 let nameTypeRoom = ''
@@ -768,7 +750,6 @@ exports.updateStatusBooking = async (req, res) => {
                     if (error) {
                         return console.log(error);
                     }
-                    console.log('Message %s sent: %s', info.messageId, info.response);
                 });
                 book.save((async function (err) {
                     if (err) {
@@ -790,7 +771,6 @@ exports.updateStatusBooking = async (req, res) => {
                                 if (err || user === null || book.email == user.email) {
                                     console.log(user);
                                 } else {
-                                    console.log('vafo dday roi')
                                     messageToUserUpdate.user = user.email;
                                     message.user = user.email
                                 }
@@ -806,14 +786,12 @@ exports.updateStatusBooking = async (req, res) => {
                                     messageAdmin: newMessageAdmin
                                 });
                             }).catch(err => {
-                                console.log('false to save messageAdmin');
                                 return res.send({
                                     status: 404,
                                     message: err.message || 'Some error occurred while save messageAdmin'
                                 });
                             });
                         }).catch(err => {
-                            console.log('false to save message');
                             return res.send({
                                 status: 404,
                                 message: err.message || 'Some error occurred while save message'
@@ -824,7 +802,6 @@ exports.updateStatusBooking = async (req, res) => {
 
             }
             if (actionName === 'Từ chối') {
-                console.log('từ chối rồi')
                 let nameTypeRoom = ''
                 if (roomDetail.roomType == 1) {
                     nameTypeRoom = 'Phòng tiêu chuẩn'
@@ -927,14 +904,12 @@ exports.updateStatusBooking = async (req, res) => {
                                     messageUseUpadte: messageToUserUpdate,
                                 });
                             }).catch(err => {
-                                console.log('false to save messageAdmin');
                                 return res.send({
                                     status: 404,
                                     message: err.message || 'Some error occurred while save messageAdmin'
                                 });
                             });
                         }).catch(err => {
-                            console.log('false to save message');
                             return res.send({
                                 status: 404,
                                 message: err.message || 'Some error occurred while save message'
@@ -998,10 +973,7 @@ exports.updateStatusBooking = async (req, res) => {
                     videoUrl: '',
                     news: 1
                 });
-                console.log(book)
-                console.log(message)
                 message.user = book.email
-                console.log(book.email)
                 if (book.userUpdateId !== '' && book.userUpdateId != null) {
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
@@ -1031,14 +1003,12 @@ exports.updateStatusBooking = async (req, res) => {
                                     hotelUSe: book.hotelUser
                                 });
                             }).catch(err => {
-                                console.log('false to save messageAdmin');
                                 return res.send({
                                     status: 404,
                                     message: err.message || 'Some error occurred while save messageAdmin'
                                 });
                             });
                         }).catch(err => {
-                            console.log('false to save message');
                             return res.send({
                                 status: 404,
                                 message: err.message || 'Some error occurred while save message'
@@ -1048,7 +1018,6 @@ exports.updateStatusBooking = async (req, res) => {
                 }))
             }
             if (actionName === 'Hủy phòng') { // hotel duyệt người dùng từ chối
-                console.log('vào đây để hủy')
                 let nameTypeRoom = ''
                 if (roomDetail.roomType == 1) {
                     nameTypeRoom = 'Phòng tiêu chuẩn'
@@ -1073,8 +1042,6 @@ exports.updateStatusBooking = async (req, res) => {
                 }
 
                 book.status = -2;
-                console.log('Hủy phòng')
-                console.log(roomDetail)
                 message.content = 'Khách hàng đã hủy phòng thành công. Xin cảm ơn'
                 messageUse.content = 'Khách hàng đã hủy  phòng thành công. Xin cảm ơn';
                 messageAdmin.content = 'Khách hàng ' + book.email + ' đã hủy loại phòng của bạn: ' + nameTypeRoom +
@@ -1090,11 +1057,8 @@ exports.updateStatusBooking = async (req, res) => {
                     news: 1
                 });
                 if (book.userUpdateId != '' && book.userUpdateId != null) {
-                    console.log('vào đây khi có data')
-                    console.log(book)
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
-                        console.log(user)
                         if (err || user === null || book.email == user.email) {
                             console.log(user);
                         } else {
@@ -1103,7 +1067,6 @@ exports.updateStatusBooking = async (req, res) => {
                     })
                 }
                 messageAdmin.user = book.hotelUser
-                console.log(messageUse)
                 book.save((function (err) {
                     if (err) {
                         return res.send({
@@ -1121,14 +1084,12 @@ exports.updateStatusBooking = async (req, res) => {
                                 hotelUSe: book.hotelUser
                                 // messageAdmin.save().then(newMessageAdmin => {}
                             }).catch(err => {
-                                console.log('false to save messageAdmin');
                                 return res.send({
                                     status: 404,
                                     message: err.message || 'Some error occurred while save messageAdmin'
                                 });
                             });
                         }).catch(err => {
-                            console.log('false to save message');
                             return res.send({
                                 status: 404,
                                 message: err.message || 'Some error occurred while save message'
@@ -1138,7 +1099,6 @@ exports.updateStatusBooking = async (req, res) => {
                 }))
             } // của người dùng chưa thanh toán
             if (actionName === 'Pay Cancel') { // của người dùng đã thanh toán xog rồi hủy phòng
-                console.log('vào đây rồi')
                 let nameTypeRoom = ''
                 if (roomDetail.roomType == 1) {
                     nameTypeRoom = 'Phòng tiêu chuẩn'
@@ -1191,10 +1151,7 @@ exports.updateStatusBooking = async (req, res) => {
                     videoUrl: '',
                     news: 1
                 });
-                console.log(book)
-                console.log(message)
                 message.user = book.email
-                console.log(book.email)
                 if (book.userUpdateId !== '' && book.userUpdateId != null) {
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
@@ -1248,10 +1205,8 @@ exports.updateStatusHotel = async (req, res) => {
     var idUser = mongoose.Types.ObjectId(req.body.hotel.idUser);
     var idHotel = mongoose.Types.ObjectId(req.body.hotel.idHotel);
     var actionName = req.body.hotel.actionName;
-    console.log(req.body.hotel);
     await Hotels.findOne({_id: idHotel}, function (err, hotel) {
         if (err || hotel === null) {
-            console.log(hotel);
             return res.send({
                 status: 401,
                 message: 'Không thể tìm thấy khách sạn!'
@@ -1303,7 +1258,6 @@ exports.updateStatusHotel = async (req, res) => {
                         message.content = 'Chúc mừng bạn đã được mở khóa khách sạn ' + hotel.name;
                         messageAdmin.content = 'Bạn đã được hệ thống mở khóa thành công khách sạn ' + hotel.name + ' của thành viên ' + hotel.user.email;
                     }
-                    console.log(message);
                     hotel.save((function (err) {
                         if (err) {
                             return res.send({

@@ -338,8 +338,8 @@ io.sockets.on('connection', function (socket) {
         let ObjectId = message.objectId;
         let sendMessage = message.message;
         let id = listUserOnline[ObjectId];
-        console.log(' id nè' + id)
-        console.log(' user nè ' + sendMessage)
+        // console.log(' id nè' + id)
+        // console.log(' user nè ' + sendMessage)
         // listUserOnline[message]=socket;
         socket.broadcast.to(id).emit('message', sendMessage);
     });
@@ -356,8 +356,8 @@ io.sockets.on('connection', function (socket) {
         }
         let sendMessage = { 'get-list-online': listUserOnline };
         let id = listUserOnline[ObjectId];
-        console.log(' id nè1   ' + id)
-        console.log(' user nè1 ' + listUserOnline)
+        // console.log(' id nè1   ' + id)
+        // console.log(' user nè1 ' + listUserOnline)
         // listUserOnline[message]=socket;
         socket.broadcast.emit('message', sendMessage);
     });
