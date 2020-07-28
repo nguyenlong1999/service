@@ -606,9 +606,9 @@ exports.getHotelById = async (req, res) => {
 
 exports.updateRatingInBooking = async (req, res) => {
     var idBook = mongoose.Types.ObjectId(req.body.object.idBook);
-    var idHotel = mongoose.Types.ObjectId(req.body.object.hotelId);
+    var idHotel = req.body.object.hotelId;
     var rating = req.body.object.rating
-    console.log(idBook)
+    console.log(idHotel + 'hote; iD nfe')
     await Booking.findOne({_id: idBook}, async function (err, book) {
         if (err || book === null) {
             console.log(book);
@@ -618,11 +618,39 @@ exports.updateRatingInBooking = async (req, res) => {
             });
         } else {
             book.rating = rating
-            book.save(booking => {
-                res.send({
-                    message: 'Đánh giá thành công khách sạn'
+            book.save().then(booking => {
+                // update rating ở trong facilities
+                console.log(booking)
+                Hotels.findOne({nameSpace: idHotel}, function (err, hotel) {
+                    if (err) {
+                        return res.send({
+                            status: 401,
+                            message: err
+                        });
+                    } else {
+                        hotel.pointRating = booking.rating;
+                        hotel.save().then(hotels => {
+                            console.log('hotel khác')
+                            console.log(hotels)
+                            Facilities.findOne({"hotelObj.nameSpace": idHotel}, function (err, facilitie) {
+                                if (err) {
+                                    return res.send({
+                                        status: 401,
+                                        message: err
+                                    });
+                                } else {
+                                    facilitie.hotelObj = hotels;
+                                    facilitie.save().then(faciday =>  {
+                                        res.send({
+                                            message: 'Đánh giá thành công khách sạn'
+                                        })
+                                    })
+                                }
+                            })
+                        })
+                    }
                 })
-            });
+            })
         }
     })
 }
@@ -1092,7 +1120,7 @@ exports.updateStatusBooking = async (req, res) => {
                     }
                 }))
             } // của người dùng chưa thanh toán
-            if (actionName === 'Pay Cancel'){ // của người dùng đã thanh toán xog rồi hủy phòng
+            if (actionName === 'Pay Cancel') { // của người dùng đã thanh toán xog rồi hủy phòng
                 console.log('vào đây rồi')
                 let nameTypeRoom = ''
                 if (roomDetail.roomType == 1) {

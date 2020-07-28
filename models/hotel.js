@@ -13,7 +13,7 @@ const HotelSchema = mongoose.Schema({
     starHotel: { type: Number, default: '' },
     suggestPlayground: { type: String, default: '' },
     totalRoomNumber: { type: Number, default: 0 },
-    pointRating: { type: Number, default: 0 },
+    pointRating: { type: Number, default: 5 },
     desHotel: { type: String, default: '' },
     zip: { type: String, default: '' },
     status: { type: Number, default: 0 },
