@@ -567,7 +567,12 @@ exports.getHotelById = async (req, res) => {
             "hotelObj.nameSpace": hotelObjId
         }).then(
             facilities => {
-                // res.status(200).send(facilities)
+                if (facilities.length === 0) {
+                    return res.send({
+                        status: 404,
+                        message: 'Some error occurred while finding hotel'
+                    })
+                }
                 tienNghi = facilities
             }
         ).then(
@@ -590,7 +595,10 @@ exports.getHotelById = async (req, res) => {
         objectRes.push(tienNghi);
         objectRes.push(listRoomDetails)
         objectRes.push(countRating)
-        res.status(200).send(objectRes)
+        return res.send({
+            status: 200,
+            result: objectRes
+        })
     } catch (error) {
         res.send({
             'status': 404,
