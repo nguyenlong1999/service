@@ -593,7 +593,7 @@ exports.getHotelById = async (req, res) => {
             )
         )
         Booking.find({
-            hotelNameSpace: idHotel,
+            hotelNameSpace: hotelObjId,
             status: '2',
             rating: {$gt: 0}
         }, function (err, listBooking) {
