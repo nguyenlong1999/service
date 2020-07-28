@@ -604,6 +604,29 @@ exports.getHotelById = async (req, res) => {
     }
 };
 
+exports.updateRatingInBooking = async (req, res) => {
+    var idBook = mongoose.Types.ObjectId(req.body.object.idBook);
+    var idHotel = mongoose.Types.ObjectId(req.body.object.hotelId);
+    var rating = req.body.object.rating
+    console.log(idBook)
+    await Booking.findOne({_id: idBook}, async function (err, book) {
+        if (err || book === null) {
+            console.log(book);
+            return res.send({
+                status: 401,
+                message: 'Không thể tìm thấy bản ghi!'
+            });
+        } else {
+            book.rating = rating
+            book.save(booking => {
+                res.send({
+                    message: 'Đánh giá thành công khách sạn'
+                })
+            });
+        }
+    })
+}
+
 exports.updateStatusBooking = async (req, res) => {
     var idBook = mongoose.Types.ObjectId(req.body.booking.idBooking);
     var emailUser = req.body.booking.idUserBook
