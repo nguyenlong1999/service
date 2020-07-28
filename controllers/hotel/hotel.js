@@ -451,7 +451,7 @@ exports.getHotelFind = (async (req, res) => {
     searchOpts.nameSpace = name.join('-');
     console.log(searchOpts.nameSpace)
     let hotelList = [];
-    await Hotels.find().then(async (hotel) => {
+    await Hotels.find({status: 1}).then(async (hotel) => {
         for (let item of hotel) {
             let nameSpace = item.nameSpace;
             if (nameSpace.includes(searchOpts.nameSpace) === true) {
@@ -491,8 +491,7 @@ exports.getHotelFind = (async (req, res) => {
 
 exports.getHotelFindAll = (async (req, res) => {
     let hotelList = [];
-    console.log('âaaaaaaaaaaaaaaaaaa')
-    await Hotels.find().then(async (hotel) => {
+    await Hotels.find({status: 1}).then(async (hotel) => {
         for (let item of hotel) {
             const id = mongoose.Types.ObjectId(item._id);
             const rooms = await this.getRoom(id);
@@ -574,7 +573,8 @@ exports.getHotelById = async (req, res) => {
     let objectRes = []
 
     let tienNghi = new Facilities;
-    let listRoomDetails = []
+    let listRoomDetails = [];
+    let countRating = 0;
     try {
         await Facilities.find({
             "hotelObj.nameSpace": hotelObjId
@@ -592,8 +592,16 @@ exports.getHotelById = async (req, res) => {
                 }
             )
         )
+        Booking.find({
+            hotelNameSpace: idHotel,
+            status: '2',
+            rating: {$gt: 0}
+        }, function (err, listBooking) {
+            countRating = listBooking.length;
+        })
         objectRes.push(tienNghi);
         objectRes.push(listRoomDetails)
+        objectRes.push(countRating)
         console.log(listRoomDetails)
         res.status(200).send(objectRes)
     } catch (error) {
@@ -607,11 +615,10 @@ exports.getHotelById = async (req, res) => {
 exports.updateRatingInBooking = async (req, res) => {
     var idBook = mongoose.Types.ObjectId(req.body.object.idBook);
     var idHotel = req.body.object.hotelId;
-    var rating = req.body.object.rating
+    var rating = req.body.object.rating;
     console.log(idHotel + 'hote; iD nfe')
     await Booking.findOne({_id: idBook}, async function (err, book) {
         if (err || book === null) {
-            console.log(book);
             return res.send({
                 status: 401,
                 message: 'Không thể tìm thấy bản ghi!'
@@ -620,7 +627,7 @@ exports.updateRatingInBooking = async (req, res) => {
             book.rating = rating
             book.save().then(booking => {
                 // update rating ở trong facilities
-                console.log(booking)
+                // console.log(booking)
                 Hotels.findOne({nameSpace: idHotel}, function (err, hotel) {
                     if (err) {
                         return res.send({
@@ -628,26 +635,36 @@ exports.updateRatingInBooking = async (req, res) => {
                             message: err
                         });
                     } else {
-                        hotel.pointRating = booking.rating;
-                        hotel.save().then(hotels => {
-                            console.log('hotel khác')
-                            console.log(hotels)
-                            Facilities.findOne({"hotelObj.nameSpace": idHotel}, function (err, facilitie) {
-                                if (err) {
-                                    return res.send({
-                                        status: 401,
-                                        message: err
-                                    });
-                                } else {
-                                    facilitie.hotelObj = hotels;
-                                    facilitie.save().then(faciday =>  {
-                                        res.send({
-                                            message: 'Đánh giá thành công khách sạn'
-                                        })
-                                    })
-                                }
+                        Booking.find({
+                            hotelNameSpace: idHotel,
+                            status: '2',
+                            rating: {$gt: 0}
+                        }, function (err, listBooking) {
+                            const count = listBooking.length;
+                            let point = 0;
+                            listBooking.forEach(item => {
+                                point += item.rating;
                             })
-                        })
+                            point = point / count;
+                            hotel.pointRating = point;
+                            hotel.save().then(hotels => {
+                                Facilities.findOne({"hotelObj.nameSpace": idHotel}, function (err, facilitie) {
+                                    if (err) {
+                                        return res.send({
+                                            status: 401,
+                                            message: err
+                                        });
+                                    } else {
+                                        facilitie.hotelObj = hotels;
+                                        facilitie.save().then(faciday => {
+                                            res.send({
+                                                message: 'Đánh giá thành công khách sạn'
+                                            })
+                                        })
+                                    }
+                                })
+                            })
+                        });
                     }
                 })
             })
@@ -1300,8 +1317,7 @@ exports.updateStatusHotel = async (req, res) => {
                                         status: 200,
                                         hotel: hotel,
                                         message: newMessage,
-                                        messageAdmin: newMessageAdmin,
-                                        messageUseUpadte: messageToUserUpdate,
+                                        messageAdmin: newMessageAdmin
                                     });
                                 }).catch(err => {
                                     console.log('false to save messageAdmin');
