@@ -940,7 +940,7 @@ exports.openUser = async (req, res) => {
                             subject: 'Chào mừng đến trang web BookingHotel', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Xin chúc mừng! Tài khoản của bạn đã được mở. Vui lòng đăng nhập trang chủ website BookingHotel' +
-                                ': localhost:4200/index'
+                                ': https://localhost:4200/index'
                             // html body
                         };
 
@@ -950,7 +950,7 @@ exports.openUser = async (req, res) => {
                             subject: 'Chào mừng đến trang web booking.hotel.com.2020', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Xin chúc mừng! Tài khoản hotels của bạn đã được mở. Vui lòng đăng nhập website:' +
-                                ': localhost:4200/login'
+                                ': https://localhost:4200/login'
                                 + '<br> để quản lý khách sạn của bạn.'
                             // html body
                         };
@@ -1014,7 +1014,7 @@ exports.activeMember = async (req, res) => {
                         subject: 'Chào mừng đến trang web Booking', // Subject line
                         text: req.body.body, // plain text body
                         html: 'Xin chúc mừng! Tài khoản của bạn đã được mở. Vui lòng đăng nhập trang chủ website Booking' +
-                            ': https://google.com/'
+                            ': https://localhost:4200/index'
                         // html body
                     };
 

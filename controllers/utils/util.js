@@ -150,7 +150,7 @@ exports.sendMail=((req, res)=> {
         text: req.body.body, // plain text body
         html: 'Chúc mừng bạn đã đăng ký thành công tài khoản trên trang web Ẩm thực ăn chay ' +
             '/n Vui lòng xác thực tài khoản đăng ký bằng link sau:' +
-            '/n http://localhost:4200/' // html body
+            '/n https://localhost:4200/' // html body
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
