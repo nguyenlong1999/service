@@ -747,7 +747,7 @@ exports.updateStatusBooking = async (req, res) => {
                     secure: true,
                     auth: {
                         user: 'booking.hotel.com.2020@gmail.com',
-                        pass: '123456a@A'
+                        pass: 'Longquang123'
                     }
                 });
                 let mailOptions = {
@@ -859,7 +859,7 @@ exports.updateStatusBooking = async (req, res) => {
                     secure: true,
                     auth: {
                         user: 'booking.hotel.com.2020@gmail.com',
-                        pass: '123456a@A'
+                        pass: 'Longquang123'
                     }
                 });
                 let mailOptions = {

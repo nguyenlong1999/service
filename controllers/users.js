@@ -114,7 +114,7 @@ exports.create =
                         secure: true,
                         auth: {
                             user: 'booking.hotel.com.2020@gmail.com',
-                            pass: '123456a@A'
+                            pass: 'Longquang123'
                         }
                     });
 
@@ -236,7 +236,7 @@ exports.createAdminAccount =
                         secure: true,
                         auth: {
                             user: 'booking.hotel.com.2020@gmail.com',
-                            pass: '123456a@A'
+                            pass: 'Longquang123'
                         }
                     });
 
@@ -931,7 +931,7 @@ exports.openUser = async (req, res) => {
                             secure: true,
                             auth: {
                                 user: 'booking.hotel.com.2020@gmail.com',
-                                pass: '123456a@A'
+                                pass: 'Longquang123'
                             }
                         });
                         let mailOptions = {
@@ -1005,7 +1005,7 @@ exports.activeMember = async (req, res) => {
                         secure: true,
                         auth: {
                             user: 'booking.hotel.com.2020@gmail.com',
-                            pass: '123456a@A'
+                            pass: 'Longquang123'
                         }
                     });
                     let mailOptions = {
