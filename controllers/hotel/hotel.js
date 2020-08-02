@@ -523,6 +523,20 @@ exports.getBookingByUser = (async (req, res) => {
     })
 });
 
+exports.getBookingAdmin = (async (req, res) => {
+    await Booking.find().sort({
+        createdAt: -1
+    }).then(booking => {
+        res.status(200).send(booking)
+    }).catch(err => {
+        console.log('not found booking');
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding booking'
+        })
+    })
+});
+
 exports.getBookingByUserRegister = (async (req, res) => {
     // const UserObjId = mongoose.Types.ObjectId(req.params.id);
     await Booking.find({
