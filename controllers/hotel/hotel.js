@@ -554,6 +554,45 @@ exports.getBookingByUserRegister = (async (req, res) => {
     })
 });
 
+exports.getBookingById = (async (req, res) => {
+    const id = mongoose.Types.ObjectId(req.params.id);
+    await Booking.findOne({
+        _id: id
+    }).then(booking => {
+        Hotels.findOne({nameSpace: booking.hotelNameSpace}).then(hotel => {
+            booking.hotelName = hotel.name;
+            booking.hotelAddress = hotel.address;
+            const idRoom = mongoose.Types.ObjectId(booking.roomDetailID)
+            RoomDetails.findOne({_id: idRoom}).then(room => {
+                booking.roomType = room.roomType;
+                booking.cancellationPolicy = room.hotelObj.cancellationPolicy;
+                const result = {
+                    booking: booking,
+                    hotelName: hotel.name,
+                    hotelAddress: hotel.address,
+                    roomType: room.roomType,
+                    cancellationPolicy: room.hotelObj.cancellationPolicy,
+                    img: hotel.image.split(',', 1).toString()
+                }
+                console.log('khà khà');
+                console.log(result)
+                return res.send({
+                    status: 200,
+                    booking: result
+                })
+            })
+
+        })
+
+    }).catch(err => {
+        console.log('not found hotel');
+        res.send({
+            'status': 404,
+            'message': err.message || 'Some error occurred while finding hotel'
+        })
+    })
+});
+
 exports.getHotelByUser = (async (req, res) => {
 
     const UserObjId = mongoose.Types.ObjectId(req.params.id);
@@ -765,7 +804,8 @@ exports.updateStatusBooking = async (req, res) => {
                         '<br> -Đến ngày: ' + book.date.end +
                         '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
                         '<br> -Trạng thái: Chưa thanh toán' +
-                        '<br> <a style="color: black">Xin vui lòng ấn vào link này để thanh toán hóa đơn https://localhost:4200/pay/' + idBook + '#' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND</a>' +
+                        '<br> Xin vui lòng ấn vào link này để thanh toán hóa đơn.' +
+                        '<a href="https://localhost:4200/pay/' + idBook + '#' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + '">Thanh toán tại đây</a>' +
                         '<br> Link thanh toán sẽ hết hạn trong vòng 1h. Hệ thống sẽ tự hủy giao dịch đặt phòng của quý khách.'
                 };
                 transporter.sendMail(mailOptions, (error, info) => {
