@@ -765,7 +765,7 @@ exports.updateStatusBooking = async (req, res) => {
                         '<br> -Đến ngày: ' + book.date.end +
                         '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
                         '<br> -Trạng thái: Chưa thanh toán' +
-                        '<br> Xin vui lòng ấn vào link này để thanh toán hóa đơn https://localhost:4200/pay/' + idBook + '#' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
+                        '<br> <a style="color: black">Xin vui lòng ấn vào link này để thanh toán hóa đơn https://localhost:4200/pay/' + idBook + '#' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND</a>' +
                         '<br> Link thanh toán sẽ hết hạn trong vòng 1h. Hệ thống sẽ tự hủy giao dịch đặt phòng của quý khách.'
                 };
                 transporter.sendMail(mailOptions, (error, info) => {
