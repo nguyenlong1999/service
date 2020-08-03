@@ -38,16 +38,6 @@ require("./models/User");
 require("./models/Token");
 require("./db/db");
 require("./config/passport");
-require("./models/province");
-require("./models/route_rail");
-require("./models/country");
-require("./models/cookStep");
-require("./models/cook-way");
-require("./models/gallery");
-require("./models/food_type");
-require("./models/recipe");
-require("./models/interest");
-require("./models/ingredient");
 require("./models/comment");
 require("./config/facebookconfig");
 require("./config/googleconfig");
@@ -56,8 +46,6 @@ require("./models/booking");
 require("./models/summary");
 require("./models/hotel");
 require("./models/facilities");
-require("./models/reservation_time");
-require("./models/cancel_room");
 require("./models/room_detail");
 require("./models/chat_message");
 const cron = require('node-schedule');
@@ -133,21 +121,10 @@ app.use(
         saveUninitialized: false
     })
 );
-require("./routers/province.route")(app);
 require("./routers/user.router")(app);
-require("./routers/route-rail.route")(app);
 require("./routers/token.router")(app);
-require("./routers/country.route")(app);
-require("./routers/food-type.route")(app);
-require("./routers/cook-way.route")(app);
-require("./routers/recipe.route")(app);
-require("./routers/interest.router")(app);
-require("./routers/ingredient.router")(app);
-require("./routers/cook-step.route")(app);
 require("./routers/comment.router")(app);
-require("./routers/util.router")(app);
 require("./routers/message.router")(app);
-require("./routers/gallery.router")(app);
 require("./routers/summary.router")(app);
 require("./routers/hotel.router")(app);
 require("./routers/chat-message.router")(app);
@@ -329,10 +306,10 @@ io.sockets.on('connection', function (socket) {
     // socket.emit('wellcome',{mess: }
     socket.on('setSocketId', function (socketData) {
         let userName = socketData.name + '-' + socketData.userId;
-        console.log(userName);
+        // console.log(userName);
         listUserOnline[userName] = socket;
 
-        console.log(Object.keys(listUserOnline))
+        // console.log(Object.keys(listUserOnline))
     });
     socket.on('new-message', (message) => {
         let ObjectId = message.objectId;
@@ -357,11 +334,10 @@ io.sockets.on('connection', function (socket) {
         let sendMessage = { 'get-list-online': listUserOnline };
         let id = listUserOnline[ObjectId];
         // console.log(' id nè1   ' + id)
-        // console.log(' user nè1 ' + listUserOnline)
         // listUserOnline[message]=socket;
         socket.broadcast.emit('message', sendMessage);
     });
-    console.log(Object.keys(listUserOnline))
+    // console.log(Object.keys(listUserOnline))
 });
 
 server.listen(port, () => {

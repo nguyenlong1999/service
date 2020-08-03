@@ -7,9 +7,6 @@ const Hotels = mongoose.model("Hotels")
 const RoomDetails = mongoose.model("RoomDetails");
 const Facilities = mongoose.model("Facilities");
 const Messages = mongoose.model("Messages");
-const ReservationTimes = mongoose.model("ReservationTimes");
-const CancelRooms = mongoose.model("CancelRooms");
-// const Hotels = require("../models/hotel");
 const Tokens = require("../../models/Token");
 const nodeMailer = require('nodemailer');
 const Summarys = mongoose.model('Summarys');
@@ -62,7 +59,7 @@ exports.createBooking = (req, res) => {
             messageToHotel.save().then(messageToHotel => {
                 messageToHotel.save()
             }).catch(err => {
-                console.log('false to save message');
+                // console.log('false to save message');
                 return res.send({
                     status: 404,
                     message: err.message || 'Some error occurred while save message'
@@ -414,7 +411,7 @@ exports.getHotel = (async (req, res) => {
     await Hotels.find().then(hotel => {
         res.status(200).send(hotel)
     }).catch(err => {
-        console.log('not found hotel');
+        // console.log('not found hotel');
         res.send({
             'status': 404,
             'message': err.message || 'Some error occurred while finding hotel'
@@ -426,7 +423,7 @@ exports.getHotelSearch = (async (req, res) => {
     await Hotels.find().then(hotel => {
         res.status(200).send(hotel)
     }).catch(err => {
-        console.log('not found hotel');
+        // console.log('not found hotel');
         res.send({
             'status': 404,
             'message': err.message || 'Some error occurred while finding hotel'
@@ -444,6 +441,15 @@ exports.getHotelFind = (async (req, res) => {
     await Hotels.find({status: 1}).then(async (hotel) => {
         for (let item of hotel) {
             let nameSpace = item.nameSpace;
+            let countRating = 0
+            await Booking.find({
+                hotelNameSpace: nameSpace,
+                status: '2',
+                rating: {$gt: 0}
+            }, function (err, listBooking) {
+                countRating = listBooking.length;
+            })
+            countRating = countRating === 0 ? 1 : countRating;
             if (nameSpace.includes(searchOpts.nameSpace) === true) {
                 const id = mongoose.Types.ObjectId(item._id);
                 const rooms = await this.getRoom(id);
@@ -458,7 +464,8 @@ exports.getHotelFind = (async (req, res) => {
                     const object = {
                         hotel: item,
                         roomDetail: rooms,
-                        faciliti: facilities
+                        faciliti: facilities,
+                        countRating: countRating
                     }
                     hotelList.push(object);
                 }
@@ -470,7 +477,7 @@ exports.getHotelFind = (async (req, res) => {
             message: 'Tìm kiếm khách sạn thành công!'
         });
     }).catch(err => {
-        console.log('not found hotel');
+        // console.log('not found hotel');
         res.send({
             'status': 404,
             'message': err.message || 'Some error occurred while finding hotel'
@@ -574,8 +581,8 @@ exports.getBookingById = (async (req, res) => {
                     cancellationPolicy: room.hotelObj.cancellationPolicy,
                     img: hotel.image.split(',', 1).toString()
                 }
-                console.log('khà khà');
-                console.log(result)
+                // console.log('khà khà');
+                // console.log(result)
                 return res.send({
                     status: 200,
                     booking: result
@@ -833,7 +840,7 @@ exports.updateStatusBooking = async (req, res) => {
                             const id = mongoose.Types.ObjectId(book.userUpdateId);
                             await Users.findOne({_id: id}, function (err, user) {
                                 if (err || user === null || book.email == user.email) {
-                                    console.log(user);
+                                    console.log(err);
                                 } else {
                                     messageToUserUpdate.user = user.email;
                                     message.user = user.email
@@ -942,7 +949,7 @@ exports.updateStatusBooking = async (req, res) => {
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
                         if (err || user === null || book.email == user.email) {
-                            console.log(user);
+                            console.log(err);
                         } else {
                             // messageToUserUpdate.user = user.email;
                             // messageToUserUpdate.save();
@@ -1042,10 +1049,41 @@ exports.updateStatusBooking = async (req, res) => {
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
                         if (err || user === null || book.email == user.email) {
-                            console.log(user);
+                            console.log(err);
                         } else {
                             message.user = user.email
                         }
+                    }).then(()=> {
+                        let transporter = nodeMailer.createTransport({
+                            host: 'smtp.gmail.com',
+                            port: 465,
+                            secure: true,
+                            auth: {
+                                user: 'booking.hotel.com.2020@gmail.com',
+                                pass: 'Longquang123'
+                            }
+                        });
+                        let mailOptions = {
+                            from: 'Ban quản trị website Booking <booking.hotel.com.2020@gmail.com>', // sender address
+                            to: message.user, // list of receivers
+                            subject: 'Chào mừng đến trang web Booking', // Subject line
+                            text: req.body.body, // plain text body
+                            html: 'Bạn đã thanh toán thành công loại phòng ' + nameTypeRoom +
+                                '<br> -Tên khách sạn: ' +  roomDetail.hotelObj.name +
+                                '<br> -Số lượng: ' +  book.totalAmountRoom +
+                                '<br> -Từ ngày: ' + book.date.begin +
+                                '<br> -Đến ngày: ' + book.date.end +
+                                '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
+                                '<br> Nếu bạn muốn hủy phòng :' +
+                                '<a href="https://localhost:4200/pay/' + idBook + '">Hủy phòng tại đây</a>'
+
+                        };
+                        transporter.sendMail(mailOptions, (error, info) => {
+                            if (error) {
+                                return console.log(error);
+                            }
+                            console.log('Message %s sent: %s', info.messageId, info.response);
+                        });
                     })
                 }
 
@@ -1124,7 +1162,7 @@ exports.updateStatusBooking = async (req, res) => {
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
                         if (err || user === null || book.email == user.email) {
-                            console.log(user);
+                            console.log(err);
                         } else {
                             message.user = user.email
                         }
@@ -1189,8 +1227,8 @@ exports.updateStatusBooking = async (req, res) => {
                 book.status = 3;
                 // message.content = 'Khách hàng đã thanh toán thành công. Xin cảm ơn'
                 message.news = 1
-                console.log(book.date.begin)
-                console.log(book.date.end)
+                // console.log(book.date.begin)
+                // console.log(book.date.end)
                 message.content = 'Khách hàng đã hủy thành công loại phòng: ' + nameTypeRoom
                     + ' Tên khách sạn: ' + roomDetail.hotelObj.name
                     + ' Số lượng: ' + book.totalAmountRoom
