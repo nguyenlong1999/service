@@ -1075,7 +1075,7 @@ exports.updateStatusBooking = async (req, res) => {
                         } else {
                             message.user = user.email
                         }
-                    }).then(()=> {
+                    }).then(() => {
                         let transporter = nodeMailer.createTransport({
                             host: 'smtp.gmail.com',
                             port: 465,
@@ -1091,8 +1091,8 @@ exports.updateStatusBooking = async (req, res) => {
                             subject: 'Chào mừng đến trang web Booking', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Bạn đã thanh toán thành công loại phòng ' + nameTypeRoom +
-                                '<br> -Tên khách sạn: ' +  roomDetail.hotelObj.name +
-                                '<br> -Số lượng: ' +  book.totalAmountRoom +
+                                '<br> -Tên khách sạn: ' + roomDetail.hotelObj.name +
+                                '<br> -Số lượng: ' + book.totalAmountRoom +
                                 '<br> -Từ ngày: ' + book.date.begin +
                                 '<br> -Đến ngày: ' + book.date.end +
                                 '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
@@ -1106,7 +1106,40 @@ exports.updateStatusBooking = async (req, res) => {
                             }
                             console.log('Message %s sent: %s', info.messageId, info.response);
                         });
+                        console.log('Gửi mail nè')
                     })
+                } else {
+                    let transporter = nodeMailer.createTransport({
+                        host: 'smtp.gmail.com',
+                        port: 465,
+                        secure: true,
+                        auth: {
+                            user: 'booking.hotel.com.2020@gmail.com',
+                            pass: 'Longquang123'
+                        }
+                    });
+                    let mailOptions = {
+                        from: 'Ban quản trị website Booking <booking.hotel.com.2020@gmail.com>', // sender address
+                        to: message.user, // list of receivers
+                        subject: 'Chào mừng đến trang web Booking', // Subject line
+                        text: req.body.body, // plain text body
+                        html: 'Bạn đã thanh toán thành công loại phòng ' + nameTypeRoom +
+                            '<br> -Tên khách sạn: ' + roomDetail.hotelObj.name +
+                            '<br> -Số lượng: ' + book.totalAmountRoom +
+                            '<br> -Từ ngày: ' + book.date.begin +
+                            '<br> -Đến ngày: ' + book.date.end +
+                            '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
+                            '<br> Nếu bạn muốn hủy phòng :' +
+                            '<a href="https://localhost:4200/pay/' + idBook + '">Hủy phòng tại đây</a>'
+
+                    };
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) {
+                            return console.log(error);
+                        }
+                        console.log('Message %s sent: %s', info.messageId, info.response);
+                    });
+                    console.log('Gửi mail nè')
                 }
 
                 book.save((function (err) {
@@ -1274,7 +1307,7 @@ exports.updateStatusBooking = async (req, res) => {
                         + ' Số lượng: ' + book.totalAmountRoom
                         + ' Từ ngày: ' + book.date.begin
                         + ' Đến ngày: ' + book.date.end
-                        +  ' Số tiền trả lại: ' + payReturnMoney
+                        + ' Số tiền trả lại: ' + payReturnMoney
                         + ' Xin cảm ơn.',
                     imageUrl: '',
                     videoUrl: '',
@@ -1288,7 +1321,7 @@ exports.updateStatusBooking = async (req, res) => {
                         } else {
                             message.user = user.email
                         }
-                    }).then(()=> {
+                    }).then(() => {
                         let transporter = nodeMailer.createTransport({
                             host: 'smtp.gmail.com',
                             port: 465,
@@ -1304,8 +1337,8 @@ exports.updateStatusBooking = async (req, res) => {
                             subject: 'Chào mừng đến trang web Booking', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Bạn đã hủy thành công loại phòng ' + nameTypeRoom +
-                                '<br> -Tên khách sạn: ' +  roomDetail.hotelObj.name +
-                                '<br> -Số lượng: ' +  book.totalAmountRoom +
+                                '<br> -Tên khách sạn: ' + roomDetail.hotelObj.name +
+                                '<br> -Số lượng: ' + book.totalAmountRoom +
                                 '<br> -Từ ngày: ' + book.date.begin +
                                 '<br> -Đến ngày: ' + book.date.end +
                                 '<br> -Tổng tiền: ' + book.totalMoney.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + 'VND' +
