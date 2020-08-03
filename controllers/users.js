@@ -123,7 +123,7 @@ exports.create =
                         to: user.email, // list of receivers
                         subject: 'Chào mừng đến trang web booking', // Subject line
                         text: req.body.body, // plain text body
-                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản trên trang booking.com ' +
+                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản trên trang booking-hotel.com ' +
                             '<br> Vui lòng xác thực tài khoản đăng ký bằng link sau:' +
                             '<br> https://localhost:4200/active/' + finalUser._id
                         // html body
@@ -134,7 +134,7 @@ exports.create =
                         to: user.email, // list of receivers
                         subject: 'Chào mừng đến trang web booking', // Subject line
                         text: req.body.body, // plain text body
-                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản hotels trên trang booking.com ' +
+                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản hotels trên trang booking-hotel.com ' +
                             '<br> Bạn vui lòng trả lời lại tin nhắn với cú pháp:'
                             + '<br> Tên:'
                             + '<br> Địa chỉ:'
@@ -145,7 +145,7 @@ exports.create =
                         // html body
                     };
 
-                    if (finalUser == true) {
+                    if (isHotelUser == true) {
                         transporter.sendMail(mailOptionsHotels, (error, info) => {
                             if (error) {
                                 return console.log(error);
@@ -246,7 +246,7 @@ exports.createAdminAccount =
                         to: user.email, // list of receivers
                         subject: 'Chào mừng đến trang web booking', // Subject line
                         text: req.body.body, // plain text body
-                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản quản lý trang trên trang web Booking.com '
+                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản quản lý trang trên trang web booking-hotel.com '
                         // html body
                     };
 

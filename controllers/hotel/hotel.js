@@ -61,6 +61,28 @@ exports.createBooking = (req, res) => {
 
             messageToHotel.save().then(messageToHotel => {
                 messageToHotel.save()
+                let transporter = nodeMailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    port: 465,
+                    secure: true,
+                    auth: {
+                        user: 'booking.hotel.com.2020@gmail.com',
+                        pass: 'Longquang123'
+                    }
+                });
+                let mailOptions = {
+                    from: 'Ban quản trị website Booking <booking.hotel.com.2020@gmail.com>', // sender address
+                    to: date.hotelUser, // list of receivers
+                    subject: 'Chào mừng đến trang web Booking', // Subject line
+                    text: req.body.body, // plain text body
+                    html: 'Thông báo!!!! Bạn có một yêu cầu đặt phòng mới'
+                };
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        return console.log(error);
+                    }
+                    console.log('Message %s sent: %s', info.messageId, info.response);
+                });
             }).catch(err => {
                 console.log('false to save message');
                 return res.send({
