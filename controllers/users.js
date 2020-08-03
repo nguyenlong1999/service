@@ -62,7 +62,7 @@ exports.updateUser = async (req, res) => {
     });
 };
 exports.create = (auth.optional, (req, res) => {
-    // console.log(req);
+    console.log(req);
     const user = {
         email: req.body.user.email,
         password: req.body.user.password,
@@ -72,11 +72,11 @@ exports.create = (auth.optional, (req, res) => {
     };
     const isHotelUser = req.body.user.isUserHotel
     const finalUser = new Users(user);
-    // console.log(isHotelUser + 'có phải ks không')
+    console.log(isHotelUser + 'có phải ks không')
     if (isHotelUser) {
         finalUser.role = 1
     }
-    // console.log(isHotelUser + 'đây là hotel????')
+    console.log(isHotelUser + 'đây là hotel????')
     Users.findOne({email: user.email}, function (err, users) {
         if (users !== null) {
             return res.send({
@@ -114,47 +114,35 @@ exports.create = (auth.optional, (req, res) => {
                 }
             });
 
-                    let mailOptions = {
-                        from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
-                        to: user.email, // list of receivers
-                        subject: 'Chào mừng đến trang web booking', // Subject line
-                        text: req.body.body, // plain text body
-                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản trên trang booking-hotel.com ' +
-                            '<br> Vui lòng xác thực tài khoản đăng ký bằng link sau:' +
-                            '<br> https://localhost:4200/active/' + finalUser._id
-                        // html body
-                    };
+            let mailOptions = {
+                from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
+                to: user.email, // list of receivers
+                subject: 'Chào mừng đến trang web booking', // Subject line
+                text: req.body.body, // plain text body
+                html: 'Chúc mừng bạn đã đăng ký thành công tài khoản trên trang booking-hotel.com ' +
+                    '<br> Vui lòng xác thực tài khoản đăng ký bằng link sau:' +
+                    '<br> https://localhost:4200/active/' + finalUser._id
+            };
 
-                    let mailOptionsHotels = {
-                        from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
-                        to: user.email, // list of receivers
-                        subject: 'Chào mừng đến trang web booking', // Subject line
-                        text: req.body.body, // plain text body
-                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản hotels trên trang booking-hotel.com ' +
-                            '<br> Bạn vui lòng trả lời lại tin nhắn với cú pháp:'
-                            + '<br> Tên:'
-                            + '<br> Địa chỉ:'
-                            + '<br> Số điện thoại:'
-                            + '<br> Hoặc liên hệ số điện thoại: 0123456789'
-                            + '<br> Quản trị viên sẽ liên hệ với bạn để hoàn thành đăng kí tài khoản hotel.'
-                            + '<br> Xin chân thành cảm ơn quý đối tác.'
-                        // html body
-                    };
+            let mailOptionsHotels = {
+                from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
+                to: user.email, // list of receivers
+                subject: 'Chào mừng đến trang web booking', // Subject line
+                text: req.body.body, // plain text body
+                html: 'Chúc mừng bạn đã đăng ký thành công tài khoản hotels trên trang booking-hotel.com ' +
+                    '<br> Bạn vui lòng trả lời lại tin nhắn với cú pháp:'
+                    + '<br> Tên:'
+                    + '<br> Địa chỉ:'
+                    + '<br> Số điện thoại:'
+                    + '<br> Hoặc liên hệ số điện thoại: 0123456789'
+                    + '<br> Quản trị viên sẽ liên hệ với bạn để hoàn thành đăng kí tài khoản hotel.'
+                    + '<br> Xin chân thành cảm ơn quý đối tác.'
+            };
 
-                    if (isHotelUser == true) {
-                        transporter.sendMail(mailOptionsHotels, (error, info) => {
-                            if (error) {
-                                return console.log(error);
-                            }
-                            console.log('Message %s sent: %s', info.messageId, info.response);
-                        });
-                    } else {
-                        transporter.sendMail(mailOptions, (error, info) => {
-                            if (error) {
-                                return console.log(error);
-                            }
-                            console.log('Message %s sent: %s', info.messageId, info.response);
-                        });
+            if (isHotelUser == true) {
+                transporter.sendMail(mailOptionsHotels, (error, info) => {
+                    if (error) {
+                        return console.log(error);
                     }
                     console.log('Message %s sent: %s', info.messageId, info.response);
                 });
@@ -243,14 +231,14 @@ exports.createAdminAccount = (auth.optional, (req, res) => {
                     pass: 'Longquang123'
                 }
             });
-                    let mailOptions = {
-                        from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
-                        to: user.email, // list of receivers
-                        subject: 'Chào mừng đến trang web booking', // Subject line
-                        text: req.body.body, // plain text body
-                        html: 'Chúc mừng bạn đã đăng ký thành công tài khoản quản lý trang trên trang web booking-hotel.com '
-                        // html body
-                    };
+            let mailOptions = {
+                from: 'Ban quản trị website hotel.booking.2020.com <booking.hotel.com.2020@gmail.com>', // sender address
+                to: user.email, // list of receivers
+                subject: 'Chào mừng đến trang web booking', // Subject line
+                text: req.body.body, // plain text body
+                html: 'Chúc mừng bạn đã đăng ký thành công tài khoản quản lý trang trên trang web booking-hotel.com '
+                // html body
+            };
 
 
             transporter.sendMail(mailOptions, (error, info) => {
