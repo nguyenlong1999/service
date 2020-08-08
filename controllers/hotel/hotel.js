@@ -1067,6 +1067,8 @@ exports.updateStatusBooking = async (req, res) => {
                     news: 1
                 });
                 message.user = book.email
+                console.log('óc óc óc óc ')
+                console.log(message);
                 if (book.userUpdateId !== '' && book.userUpdateId != null) {
                     const id = mongoose.Types.ObjectId(book.userUpdateId);
                     Users.findOne({_id: id}, function (err, user) {
@@ -1087,7 +1089,7 @@ exports.updateStatusBooking = async (req, res) => {
                         });
                         let mailOptions = {
                             from: 'Ban quản trị website Booking <booking.hotel.com.2020@gmail.com>', // sender address
-                            to: message.user, // list of receivers
+                            to: book.email, // list of receivers
                             subject: 'Chào mừng đến trang web Booking', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Bạn đã thanh toán thành công loại phòng ' + nameTypeRoom +
@@ -1333,7 +1335,7 @@ exports.updateStatusBooking = async (req, res) => {
                         });
                         let mailOptions = {
                             from: 'Ban quản trị website Booking <booking.hotel.com.2020@gmail.com>', // sender address
-                            to: message.user, // list of receivers
+                            to: book.email, // list of receivers
                             subject: 'Chào mừng đến trang web Booking', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Bạn đã hủy thành công loại phòng ' + nameTypeRoom +

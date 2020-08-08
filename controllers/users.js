@@ -294,7 +294,7 @@ exports.resetPassword = (auth.optional, (req, res) => {
                 secure: true,
                 auth: {
                     user: 'booking.hotel.com.2020@gmail.com',
-                    pass: '123456a@A'
+                    pass: 'Longquang123'
                 }
             });
 
@@ -782,7 +782,7 @@ exports.bannedUser = async (req, res) => {
                             secure: true,
                             auth: {
                                 user: 'booking.hotel.com.2020@gmail.com',
-                                pass: '123456a@A'
+                                pass: 'Longquang123'
                             }
                         });
 
@@ -792,7 +792,7 @@ exports.bannedUser = async (req, res) => {
                             subject: 'Chào mừng đến trang web Booking', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Tài khoản của bạn đã bị khóa vì vi pham quy định của website, pháp luật của nhà nước.' +
-                                'Vui lòng liên hệ lại với email: longdeptrai@gmaillcom'
+                                'Vui lòng liên hệ lại với email: booking.hotel.com.2020@gmail.com'
                             // html body
                         };
 
@@ -802,7 +802,7 @@ exports.bannedUser = async (req, res) => {
                             subject: 'Chào mừng đến trang web Booking', // Subject line
                             text: req.body.body, // plain text body
                             html: 'Tài khoản của bạn đã bị khóa vì khách sạn vi pham quy định của website.' +
-                                'Vui lòng liên hệ lại với email: longdeptrai@gmaillcom'
+                                'Vui lòng liên hệ lại với email: booking.hotel.com.2020@gmail.com'
                             // html body
                         };
 
